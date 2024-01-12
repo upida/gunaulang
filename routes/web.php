@@ -1,13 +1,10 @@
 <?php
 
-use App\Http\Controllers\AuthController; 
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\DonatorController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\StoreController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,38 +13,59 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 |
 | Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
 |
 */
 
-Route::get('/', [HomeController::class, 'home_page'])->name('home.page');
-Route::get('/search', [HomeController::class, 'search_page'])->name('search.page');
-Route::get('/login', [AuthController::class, 'login_page'])->name('login.page');
-Route::get('/register', [AuthController::class, 'register_page'])->name('register.page');
+// Route::get('/test', function() {
+//     return Inertia::render('Test');
+// })->name('test');
 
-Route::group(['prefix' => '/user', 'as' => 'user.'], function() {
-    Route::get('', [UserController::class, 'user_page'])->name('page');
-    Route::get('/setting', [UserController::class, 'setting_page'])->name('setting.page');
+Route::get('/', [HomeController::class, 'page'])->name('home');
+
+Route::get('/category', [HomeController::class, 'category_page'])->name('category');
+Route::get('/search', [HomeController::class, 'search_page'])->name('search');
+Route::get('/product/{product}', [HomeController::class, 'product_page'])->name('product');
+
+Route::middleware(['auth', 'verified'])->group(function () {
     
-    Route::group(['prefix' => '/history', 'as' => 'history.'], function() {
-        Route::get('', [HistoryController::class, 'history_page'])->name('page');
-        Route::get('/{order_id}', [HistoryController::class, 'detail_page'])->name('detail.page');
-    });
-
-    Route::group(['prefix' => '/cart', 'as' => 'cart.'], function() {
-        Route::get('', [CartController::class, 'cart_page'])->name('page');
-    });
+    Route::get('/cart', [CartController::class, 'page'])->name('cart');
+    Route::post('/cart/{product}', [CartController::class, 'edit'])->name('cart.edit');
     
     Route::group(['prefix' => '/order', 'as' => 'order.'], function() {
-        Route::get('', [OrderController::class, 'order_page'])->name('page');
-        Route::get('/shipment', [OrderController::class, 'shipment_page'])->name('shipment.page');
-        Route::get('/verification', [OrderController::class, 'verification_page'])->name('verification.page');
+        Route::get('/', [OrderController::class, 'list_page'])->name('list.page');
+        
+        Route::post('/checkout', [OrderController::class, 'checkout_page'])->name('checkout.page');
+        Route::patch('/checkout', [OrderController::class, 'create'])->name('create');
+        
+        Route::get('/{order}', [OrderController::class, 'detail_page'])->name('detail.page');
+        Route::patch('/{order}', [OrderController::class, 'update'])->name('update'); 
+    });
+
+    Route::group(['prefix' => '/donator', 'as' => 'donator.'], function () {
+        Route::get('', [DonatorController::class, 'page'])->name('page');
+        
+        Route::get('/store', [DonatorController::class, 'store_page'])->name('store.page');
+        Route::patch('/store', [DonatorController::class, 'store'])->name('store');
+        
+        Route::get('/donate', [DonatorController::class, 'donate_page'])->name('donate.page');
+        Route::post('/donate', [DonatorController::class, 'donate'])->name('donate');
+        
+        Route::get('/order', [DonatorController::class, 'order_page'])->name('order.page');
+        
+        Route::get('/order/{order}', [DonatorController::class, 'order_update_page'])->name('order.update.page');
+        Route::patch('/order/{order}', [DonatorController::class, 'order'])->name('order');
+        
+        Route::get('/{product}', [DonatorController::class, 'product_page'])->name('product.page');
+        Route::post('/{product}', [DonatorController::class, 'update'])->name('update');
     });
 });
 
-Route::group(['prefix' => '/{store_name}', 'as' => 'store.'], function() {
-    Route::get('', [StoreController::class, 'store_page'])->name('page');
-    Route::get('/search', [ProductController::class, 'search_page'])->name('search.page');
-    Route::get('/{product_title}', [ProductController::class, 'product_page'])->name('product.page');
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+require __DIR__.'/auth.php';
