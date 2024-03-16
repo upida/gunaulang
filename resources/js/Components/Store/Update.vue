@@ -11,13 +11,13 @@ const data = defineProps({
 });
 
 const form = useForm({
-    title: data.store?.title ??'',
-    description: data.store?.description ?? '',
-    email: data.store?.email ?? '',
-    phone: data.store?.phone ?? '',
+    title: data.store?.title ?? "",
+    description: data.store?.description ?? "",
+    email: data.store?.email ?? "",
+    phone: data.store?.phone ?? "",
     // photo: data.store?.photo ?? '',
     // cover: data.store?.cover ?? '',
-    address: data.store?.address ?? '',
+    address: data.store?.address ?? "",
     active: Boolean(data.store?.active ?? true),
 });
 </script>
@@ -26,7 +26,11 @@ const form = useForm({
     <section>
         <header>
             <h2 class="text-lg font-medium text-gray-900">
-                {{ data.store ? `Your store information` : `Let's make your store!` }}
+                {{
+                    data.store
+                        ? `Your store information`
+                        : `Let's make your store!`
+                }}
             </h2>
 
             <p class="mt-1 text-sm text-gray-600">
@@ -49,7 +53,7 @@ const form = useForm({
                     density="compact"
                     id="title"
                     type="text"
-                    class="text-teal-600 mt-1 block w-full"
+                    class="text-green-600 mt-1 block w-full"
                     v-model="form.title"
                     required
                     autofocus
@@ -70,7 +74,7 @@ const form = useForm({
                     density="compact"
                     id="description"
                     type="text"
-                    class="text-teal-600 mt-1 block w-full"
+                    class="text-green-600 mt-1 block w-full"
                     v-model="form.description"
                     required
                     autocomplete="description"
@@ -78,7 +82,7 @@ const form = useForm({
 
                 <InputError class="mt-2" :message="form.errors.description" />
             </div>
-            
+
             <div>
                 <InputLabel for="email" value="Email" />
 
@@ -90,7 +94,7 @@ const form = useForm({
                     density="compact"
                     id="email"
                     type="text"
-                    class="text-teal-600 mt-1 block w-full"
+                    class="text-green-600 mt-1 block w-full"
                     v-model="form.email"
                     required
                     autocomplete="email"
@@ -110,7 +114,7 @@ const form = useForm({
                     density="compact"
                     id="phone"
                     type="text"
-                    class="text-teal-600 mt-1 block w-full"
+                    class="text-green-600 mt-1 block w-full"
                     v-model="form.phone"
                     required
                     autocomplete="phone"
@@ -128,7 +132,7 @@ const form = useForm({
                     single-line
                     hide-details
                     density="compact"
-                    class="text-teal-600 mt-1 block w-full"
+                    class="text-green-600 mt-1 block w-full"
                     v-model="form.photo"
                     id="photo"
                     prepend-icon="mdi-camera"
@@ -148,7 +152,7 @@ const form = useForm({
                     density="compact"
                     id="cover"
                     type="text"
-                    class="text-teal-600 mt-1 block w-full"
+                    class="text-green-600 mt-1 block w-full"
                     v-model="form.cover"
                     required
                     autocomplete="cover"
@@ -168,7 +172,7 @@ const form = useForm({
                     density="compact"
                     id="address"
                     type="text"
-                    class="text-teal-600 mt-1 block w-full"
+                    class="text-green-600 mt-1 block w-full"
                     v-model="form.address"
                     required
                     autocomplete="address"
@@ -184,15 +188,17 @@ const form = useForm({
                     v-model="form.active"
                     hide-details
                     inset
-                    color="teal-lighten-2"
-                    :label="form.active ? 'Active' : 'Inactive' "
+                    color="green-lighten-2"
+                    :label="form.active ? 'Active' : 'Inactive'"
                 ></v-switch>
 
                 <InputError class="mt-2" :message="form.errors.active" />
             </div>
 
             <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">{{ data.store ? `Save` : `Create` }}</PrimaryButton>
+                <PrimaryButton :disabled="form.processing">{{
+                    data.store ? `Save` : `Create`
+                }}</PrimaryButton>
 
                 <Transition
                     enter-active-class="transition ease-in-out"

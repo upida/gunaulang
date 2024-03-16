@@ -51,7 +51,7 @@ const form = useForm({
                     density="compact"
                     id="name"
                     type="text"
-                    class="text-teal-600 mt-1 block w-full"
+                    class="text-green-600 mt-1 block w-full"
                     v-model="form.name"
                     required
                     autofocus
@@ -72,7 +72,7 @@ const form = useForm({
                     density="compact"
                     id="username"
                     type="text"
-                    class="text-teal-600 mt-1 block w-full"
+                    class="text-green-600 mt-1 block w-full"
                     v-model="form.username"
                     required
                     autocomplete="username"
@@ -92,7 +92,7 @@ const form = useForm({
                     density="compact"
                     id="email"
                     type="email"
-                    class="text-teal-600 mt-1 block w-full"
+                    class="text-green-600 mt-1 block w-full"
                     v-model="form.email"
                     required
                     autocomplete="username"
@@ -112,7 +112,7 @@ const form = useForm({
                     density="compact"
                     id="phone"
                     type="text"
-                    class="text-teal-600 mt-1 block w-full"
+                    class="text-green-600 mt-1 block w-full"
                     v-model="form.phone"
                     required
                     autocomplete="phone"
@@ -128,7 +128,7 @@ const form = useForm({
                         :href="route('verification.send')"
                         method="post"
                         as="button"
-                        class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                        class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                     >
                         Click here to re-send the verification email.
                     </Link>

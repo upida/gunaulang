@@ -53,9 +53,11 @@ const groupedFilterOptions = [
 ];
 
 const handleSearch = () => {
-    router.visit(route('search', {
-        q: searchQuery.value,
-    }));
+    router.visit(
+        route("search", {
+            q: searchQuery.value,
+        })
+    );
 };
 
 const resetFilters = () => {
@@ -72,10 +74,12 @@ const closeFilterModal = () => {
 };
 
 const openProduct = (id) => {
-    router.visit(route('product', {
-        product: id,
-    }));
-}
+    router.visit(
+        route("product", {
+            product: id,
+        })
+    );
+};
 </script>
 
 <template>
@@ -87,7 +91,7 @@ const openProduct = (id) => {
                 <v-col>
                     <!-- Search and Filter Section -->
                     <v-text-field
-                        class="sm:flex text-teal-600"
+                        class="sm:flex text-green-600"
                         v-model="searchQuery"
                         variant="outlined"
                         density="compact"
@@ -146,7 +150,10 @@ const openProduct = (id) => {
                         :key="product.id"
                         class="grid justify-items-center"
                     >
-                        <ProductCard @click="openProduct(product.id)" :product="product" />
+                        <ProductCard
+                            @click="openProduct(product.id)"
+                            :product="product"
+                        />
                     </v-col>
                 </v-row>
             </div>
@@ -168,9 +175,9 @@ const openProduct = (id) => {
 }
 
 .card-actions-bottom {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 </style>

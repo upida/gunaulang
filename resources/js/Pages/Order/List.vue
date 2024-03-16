@@ -1,6 +1,6 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
-import BasicLayout from '@/Layouts/BasicLayout.vue'
+import { Head } from "@inertiajs/vue3";
+import BasicLayout from "@/Layouts/BasicLayout.vue";
 
 defineProps({
     canLogin: {
@@ -10,15 +10,14 @@ defineProps({
         type: Boolean,
     },
     orders: {
-        type: Array
-    }
+        type: Array,
+    },
 });
-
 </script>
 
 <template>
-    <Head title="Kindness and Sustainability with Goods and Grubs" />
-    
+    <Head title="Setiap Bagian Berharga" />
+
     <BasicLayout :canLogin="canLogin" :canRegister="canRegister">
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -28,5 +27,4 @@ defineProps({
             </div>
         </div>
     </BasicLayout>
-
 </template>
