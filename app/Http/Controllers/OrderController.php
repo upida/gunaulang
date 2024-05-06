@@ -2,131 +2,273 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Cart;
-use App\Models\CartProduct;
+use App\Exceptions\WebException;
 use App\Models\Order;
+use App\Models\OrderAddress;
+use App\Models\OrderPayment;
+use App\Models\OrderPaymentStatus;
 use App\Models\OrderProduct;
-use App\Models\OrderRecipient;
-use App\Models\OrderShipment;
 use App\Models\Product;
 use App\Models\Store;
+use App\Models\UserAddress;
+use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Redirect;
+use Route;
 
+/**
+ * Note kekurangan:
+ * - Idempotency key
+ * - Transaction DB
+ */
 class OrderController extends Controller
 {
-    public function list_page(Request $request)
-    {
-        $orders = Order::where('user_id', $request->user()->id)->latest()->get()->toArray();
+    public function order(Request $request) {
+        try {
+            $user = $request->user();
+            $products = $request->get('products');
 
-        foreach ($orders as $key => $order) {
-            $products = OrderProduct::where('order_id', $order['id'])->get()->toArray();
-            foreach ($products as $product_key => $product) {
-                $detail_product = Product::where('id', $product['product_id'])->first()->toArray();
-                $products[$product_key] = array_merge($detail_product, $product);
+            $address = UserAddress::where([
+                'user_id' => $user->id,
+                'is_active' => true
+            ])
+            ->first();
+            
+            if (!$address) Redirect::to('/address');
+
+            $mystore = Store::where('user_id', '=', $user->id)->first();
+
+            $products_id = array_column($products, 'id');
+            $check_products = Product::whereIn('id', $products_id);
+            if ($mystore) $check_products->where('store_id', '<>', $mystore->id);
+            $check_products = $check_products->get()->toArray();
+
+            if (count($products) != count($check_products)) throw new WebException("There are products that were not found", 404);
+            
+            $products_store_id = array_unique(array_column($check_products, 'store_id'));
+            $check_stores = Store::whereIn('id', $products_store_id)->get()->toArray();
+            
+            if (!count($check_stores)) throw new WebException("Stores are not found", 404);
+            
+            $data_products = [];
+            foreach ($check_products as $check_product) {
+                $product_key = array_search($check_product['id'], array_column($products, 'id'));
+                if ($check_product['stock'] < $products[$product_key]['quantity']) throw new WebException('There are product stock that is less than quantity', 400);
+                
+                $store_key = array_search($check_product['store_id'], array_column($check_stores, 'id'));
+                if (is_numeric($store_key) && !isset($data_products[$check_product->store_id])) {
+                    $data_products[$check_product->store_id]['store'] = $check_stores[$store_key];
+                    $data_products[$check_product->store_id]['total']['products'] = 0;
+                    $data_products[$check_product->store_id]['total']['all'] = 0;
+                }
+                else if (!is_numeric($store_key)) throw new WebException('There are stores that were not found', 404);
+                
+                $data_products[$check_product->store_id]['products'][] = array_merge(
+                    $check_product,
+                    [
+                        'quantity' => $products[$product_key]['quantity'],
+                    ]
+                );
+
+                $data_products[$check_product->store_id]['total']['products'] += ($check_product['price'] * $products[$product_key]['quantity']);
+                $data_products[$check_product->store_id]['total']['all'] = $data_products[$check_product->store_id]['total']['products'];
             }
-            $orders[$key]['products'] = $products;
-            $orders[$key]['store'] = Store::where('store_id', $order['store_id'])->first();
-            $orders[$key]['shipment'] = OrderShipment::where('order_id', $order['store_id'])->first();
+
+            $total = [
+                'products' => 0,
+                'all' => 0
+            ];
+            foreach ($data_products as $products_per_store) {
+                $total['products'] += $products_per_store['total']['products'];
+            }
+
+            $total['all'] = array_sum($total);
+
+            return Inertia::render('Order/Index', [
+                'canLogin' => Route::has('login'),
+                'canRegister' => Route::has('register'),
+                'data' => [
+                    'address' => $address,
+                    'products' => array_values($data_products),
+                    'total' => $total
+                ]
+            ]);
+        } catch (Exception $e) {
+            throw new WebException($e->getMessage(), 500);
         }
-
-        return Inertia::render('Order/List', [
-            'canLogin' => Route::has('login'),
-            'canRegister' => Route::has('register'),
-            'orders' => $orders
-        ]);
     }
 
-    public function checkout_page(Request $request)
-    {
-        $cart_products = $request->get('cart_products');
+    public function add(Request $request) {
+        try {
+            $user = $request->user();
 
-        $cart_products = CartProduct::whereIn('id', $cart_products)->get()->toArray();
-        $carts = $this->groupByStore($cart_products);
+            $products = $request->get('products');
+            $address = $request->get('address');
+            $donate = $request->get('donate') ?? 0;
 
-        return Inertia::render('Order/Checkout', [
-            'canLogin' => Route::has('login'),
-            'canRegister' => Route::has('register'),
-            'carts' => $carts
-        ]);
-    }
+            $params = [];
+            foreach ($products as $product) {
+                $order = Order::create([
+                    'user_id' => $user->id,
+                    'store_id' => $product['store']['id'],
+                    'total' => $product['total']['all'],
+                    'status' => 'payment',
+                ]);
+                $params['orders'][] = $order->id;
 
-    public function create(Request $request)
-    {
-        $recipient = $request->get('recipient');
-        $carts = $request->get('carts');
-        $shippings = $request->get('shippings');
-
-        foreach ($carts as $cart) {
-            $order = Order::create([
-                'user_id' => $request->user()->id,
-                'store_id' => $cart['store_id'],
-                'total' => 0,
-                'status' => 'Pending',
-            ]);
-
-            OrderRecipient::create([
-                'order_id' => $order->id,
-                'name' => $recipient['name'],
-                'phone' => $recipient['phone'],
-                'address' => $recipient['address'],
-                'subdistrict' => $recipient['subdistrict'],
-                'district' => $recipient['district'],
-                'province' => $recipient['province'],
-            ]);
-
-            $shipping = $shippings[$cart['store_id']];
-            OrderShipment::create([
-                'order_id' => $order->id,
-                'shipment_method' => $shipping['method'],
-                'shipment_total' => 0,
-            ]);
-
-            foreach ($cart['products'] as $product) {
-                OrderProduct::create([
+                OrderAddress::create([
                     'order_id' => $order->id,
-                    'product_id' => $product['id'],
-                    'quantity' => $product['quantity'],
-                    'note' => '',
+                    'name' => $address['name'] ?? '',
+                    'phone' => $address['phone'] ?? '',
+                    'address' => $address['address'] ?? '',
+                    'subdistrict' => $address['subdistrict'] ?? '',
+                    'district' => $address['district'] ?? '',
+                    'city' => $address['city'] ?? '',
+                    'province' => $address['province'] ?? '',
+                    'latitude' => $address['latitude'] ?? '',
+                    'longitude' => $address['longitude'] ?? '',
+                    'gmaps_point' => $address['gmaps_point'] ?? '',
+                    'notes' => $address['notes'] ?? '',
+                ]);
+
+                $product_detail = [];
+                foreach ($product['products'] as $i) {
+                    $product_detail[] = [
+                        'order_id' => $order->id,
+                        'product_id' => $i['id'],
+                        'product_title' => $i['title'],
+                        // 'variant_id' => $i['variant_id'],
+                        // 'variant_name' => $i['variant_name'],
+                        'quantity' => $i['quantity'],
+                        'price' => $i['price'],
+                    ];
+                }
+                OrderProduct::insert($product_detail);
+
+                $payment = OrderPayment::create([
+                    'order_id' => $order->id,
+                    'total' => $product['total']['all'],
+                ]);
+
+                OrderPaymentStatus::create([
+                    'order_id' => $order->id,
+                    'order_payment_id' => $payment->id,
+                    'title' => 'Request Payment',
                 ]);
             }
-        }
 
-        return redirect(route('order.list.page'));
+            $params = http_build_query($params);
+            if ($donate > 0) $params .= "&donate=" . $donate;
+
+            return Redirect::to('/order/payment?' . $params);
+        } catch (Exception $e) {
+            throw new WebException($e->getMessage(), 500);
+        }
+    }
+
+    public function payment(Request $request) {
+        try {
+            $user = $request->user();
+            $orders = $request->get('orders');
+            $donate = $request->get('donate') ?? 0;
+
+            $check_orders = Order::whereIn('id', $orders)->where('user_id', $user->id)->get()->toArray();
+            if (count($check_orders) != count($orders)) throw new WebException('Orders not found', 404);
+
+            $total = 0;
+            foreach ($check_orders as $order) {
+                $total += $order['total'];
+            }
+
+            if ($donate > 0) $total += $donate;
+
+            $params = [ 'orders' => $orders, 'total' => $total ];
+            $params = http_build_query($params);
+
+            return Redirect::to('/payment_gateway_demo?' . $params);
+        } catch (Exception $e) {
+            throw new WebException($e->getMessage(), 500);
+        }
+    }
+
+    public function payment_gateway_demo(Request $request) {
+        try {
+            $orders = $request->get('orders');
+            $total = $request->get('total');
+
+            return Inertia::render('Order/Payment/Demo', [
+                'canLogin' => Route::has('login'),
+                'canRegister' => Route::has('register'),
+                'data' => [
+                    'order' => $orders,
+                    'total' => $total,
+                ]
+            ]);
+        } catch (Exception $e) {
+            throw new WebException($e->getMessage(), 500);
+        }
     }
     
-    private function groupByStore($cart_products)
-    {
-        $new_cart_products = [];
-        $new_products = [];
+    public function payment_callback(Request $request) {
+        try {
+            $user = $request->user();
+            $orders = $request->get('orders');
 
-        foreach ($cart_products as $cart_product) {
-            $new_products[] = array_merge(Product::find($cart_product['product_id'])->toArray(), $cart_product);  
+            $orders = Order::whereIn('order_id', $orders)->where('user_id', '=', $user->id)->get()->toArray();
+            foreach ($orders as $order) {
+                $payment = OrderPayment::where('order_id', '=', $order['id'])->first();
+                OrderPaymentStatus::create([
+                    'order_id' => $order['id'],
+                    'order_payment_id' => $payment->id,
+                    'title' => 'Payment successful',
+                    'received' => true
+                ]);
+                $payment->received = true;
+                $payment->save();
+            }
+
+            return Inertia::render('Order/Payment/Callback', [
+                'canLogin' => Route::has('login'),
+                'canRegister' => Route::has('register'),
+                'data' => [
+                    'order' => $orders
+                ]
+            ]);
+        } catch (Exception $e) {
+            throw new WebException($e->getMessage(), 500);
         }
-
-        foreach ($new_products as $product) {
-            if (!isset($new_cart_products[$product['store_id']])) 
-            $new_cart_products[$product['store_id']] = [
-                'store' => $this->getStore($product['store_id']),
-                'products' => [],
-            ];
-
-            $new_cart_products[$product['store_id']]['products'][] = $product;
-        }
-        
-        return array_values($new_cart_products);
     }
 
-    private function getStore($store_id)
-    {
-        static $stores = [];
+    public function detail(Request $request, int $id) {
+        try {
+            $user = $request->user();
 
-        if (!isset($stores[$store_id])) {
-            $store = Store::find($store_id);
-            $stores[$store_id] = $store;
+            $order = Order::where('id', '=', $id)->where('user_id', '=', $user->id)->first();
+            if (!$order) throw new WebException('Order not found', 404);
+            
+            $store = Store::where('store_id', '=', $order->store_id)->first();
+            if (!$store) throw new WebException('Store not found', 404);
+
+            $address = OrderAddress::where('order_id', '=', $order->id)->first();
+            
+            $products = OrderProduct::where('order_id', '=', $order->id)->get()->toArray();
+
+            $payment = OrderPayment::where('order_id', '=', $order->id)->first();
+
+            return Inertia::render('Order/Detail', [
+                'canLogin' => Route::has('login'),
+                'canRegister' => Route::has('register'),
+                'data' => [
+                    'order' => $order,
+                    'store' => $store,
+                    'address' => $address,
+                    'products' => $products,
+                    'payment' => $payment,
+                ]
+            ]);
+        } catch (Exception $e) {
+            throw new WebException($e->getMessage(), 500);
         }
-
-        return $stores[$store_id];
     }
 }

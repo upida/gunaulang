@@ -9,13 +9,8 @@ class Cart extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
-        'store_id',
         'user_id',
+        'store_id',
     ];
 }

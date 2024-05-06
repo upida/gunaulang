@@ -9,15 +9,13 @@ class OrderProduct extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'order_id',
         'product_id',
+        'product_title',
+        'variant_id',
+        'variant_name',
         'quantity',
-        'note',
+        'price',
     ];
 }

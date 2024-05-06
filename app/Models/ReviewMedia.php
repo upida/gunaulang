@@ -9,13 +9,8 @@ class ReviewMedia extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'review_id',
-        'url',
+        'path',
     ];
 }

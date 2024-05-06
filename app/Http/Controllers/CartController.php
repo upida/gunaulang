@@ -2,67 +2,143 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\ApiException;
+use App\Exceptions\WebException;
 use App\Models\Cart;
 use App\Models\CartProduct;
-use App\Models\OrderProduct;
 use App\Models\Product;
 use App\Models\Store;
+use Exception;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Route;
 
 class CartController extends Controller
 {
-    public function page(Request $request)
-    {
-        $carts = Cart::where('user_id', $request->user()->id)->latest()->get()->toArray();
+    public function cart(Request $request) {
+        try {
+            $user = $request->user();
 
-        foreach ($carts as $key => $cart) {
-            $carts[$key]['store'] = $this->get_store($cart['store_id']);
-            $carts[$key]['products'] = $this->get_product($cart['id']);
+            $data = Cart::select('stores.name as storename, stores.name as store_name')
+            ->select('cart_products.quantity as quantity')
+            ->select('products.id as id, products.title as title, products.stock as stock, products.price as price')
+            ->join('stores', 'carts.store_id', '=', 'stores.id')
+            ->join('cart_products', 'carts.id', '=', 'cart_products.cart_id')
+            ->join('products', 'cart_products.product_id', '=', 'products.id')
+            ->where('carts.user_id', $user->id)
+            ->orderBy('carts.id', 'desc')
+            ->get()
+            ->toArray();
+
+            $carts = [];
+            foreach($data as $cart) {
+                if (!isset($carts[$cart['storename']])) {
+                    $carts[$cart['storename']] = [
+                        'store' => [
+                            'storename' => $cart['storename'],
+                            'store_name' => $cart['store_name'],
+                        ],
+                        'product' => []
+                    ];
+                }
+
+                $carts[$cart['storename']]['product'][] = [
+                    'id' => $cart['id'],
+                    'title' => $cart['title'],
+                    'stock' => $cart['stock'],
+                    'price' => $cart['price'],
+                    'quantity' => $cart['quantity'],
+                ];
+            }
+
+            return Inertia::render('Cart/Index', [
+                'canLogin' => Route::has('login'),
+                'canRegister' => Route::has('register'),
+                'data' => [
+                    'cart' => $carts
+                ]
+            ]);
+        } catch (Exception $e) {
+            throw new WebException($e->getMessage(), 500);
         }
-
-        return Inertia::render('Cart', [
-            'canLogin' => Route::has('login'),
-            'canRegister' => Route::has('register'),
-            'carts' => $carts
-        ]);
     }
 
-    public function edit(Request $request, Product $product)
-    {
-        $cart = Cart::firstOrCreate([
-            'user_id' => $request->user()->id, 'store_id' => $product->store_id
-        ]);
-        
-        CartProduct::updateOrInsert(
-            [ 'cart_id' => $cart->id, 'product_id' => $product->id ],
-            [ 'quantity' => $request->get('quantity'), 'note' => '' ]
-        );
+    public function add(Request $request) {
+        try {
+            $user = $request->user();
 
-        return redirect(route('product', [
-            'product' => $product->id
-        ]));
+            $id = $request->get('id');
+            $quantity = $request->get('quantity');
+
+            $mystore = Store::where('user_id', '=', $user->id)->first();
+            
+            $product = Product::where('id', '=', $id)
+            ->first();
+
+            if (!$product) throw new ApiException('Product not found', 404);
+            else if ($mystore && $product->store_id == $mystore->id) throw new ApiException('You cannot order your own product', 400);
+            else if ($product->stock < $quantity) throw new ApiException('Product stock is less than quantity', 400);
+
+            $cart = Cart::where('user_id', '=', $user->id)->where('store_id', '=', $product->store_id)->first();
+            if (!$cart) $cart = Cart::create([ 'user_id' => $user->id, 'store_id' => $product->store_id ]);
+
+            $cart_product = CartProduct::where('cart_id', '=', $cart->id)->where('product_id', '=', $id)->first();
+            if (!$cart_product) $cart_product = CartProduct::create([ 'cart_id' => $cart->id, 'product_id' => $id, 'quantity' => $quantity ]);
+            else {
+                $quantity = $cart_product->quantity + $quantity;
+                $cart_product->quantity = $quantity;
+                $cart_product->save();
+            }
+
+            return response()->json([[
+                'data' => [
+                    'product' => $product,
+                    'quantity' => $quantity
+                ]
+            ]]);
+        } catch (Exception $e) {
+            throw new ApiException($e->getMessage(), 500);
+        }
     }
     
-    private function get_store($id) {
-        static $stores;
-        
-        if (!isset($stores[$id])) {
-            $store = Store::find($id);
-            $stores[$store->id] = $store;
+    /**
+     * Kalau quantity 0 = hapus
+     */
+    public function edit(Request $request) {
+        try {
+            $user = $request->user();
+
+            $id = $request->get('id');
+            $quantity = $request->get('quantity');
+
+            $cart_product = CartProduct::where('id', '=', $id)->first();
+            if (!$cart_product) throw new ApiException('Product not found in your cart', 404);
+
+            $cart = Cart::where('id', $cart_product->cart_id)->where('user_id', '=', $user->id)->first();
+            if (!$cart) {
+                $cart_product->delete();
+                throw new ApiException('Cart not found', 404);
+            }
+
+            $product = Product::where('id', '=', $cart_product->product_id)->first();
+            if (!$product) {
+                $cart->delete();
+                throw new ApiException('Product not found', 404);
+            }
+
+            if ($product->stock < $quantity) throw new ApiException('Product stock is less than quantity', 400);
+
+            $cart_product->quantity = $quantity;
+            $cart_product->save();
+
+            return response()->json([
+                'data' => [
+                    'product' => $product,
+                    'quantity' => $quantity
+                ]
+            ]);
+        } catch (Exception $e) {
+            throw new ApiException($e->getMessage(), 500);
         }
-
-        return $stores[$id];
-    }
-
-    private function get_product($cart_id) {
-        $cart_products = CartProduct::where('cart_id', $cart_id)->get()->toArray();
-
-        foreach ($cart_products as $key => $cart_product) {
-            $cart_products[$key]['product'] = Product::find($cart_product['product_id']);
-        }
-
-        return $cart_products;
     }
 }

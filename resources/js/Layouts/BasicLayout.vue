@@ -40,7 +40,7 @@ defineProps({
                             <div
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                             >
-                                <NavLink
+                                <!-- <NavLink
                                     :href="route('home')"
                                     :active="route().current('home')"
                                 >
@@ -64,7 +64,7 @@ defineProps({
                                             ></v-icon>
                                         </template>
                                     </v-tooltip>
-                                </NavLink>
+                                </NavLink> -->
                             </div>
                         </div>
 
@@ -74,7 +74,7 @@ defineProps({
                                 v-if="canLogin && $page.props.auth.user"
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                             >
-                                <NavLink
+                                <!-- <NavLink
                                     :href="route('cart')"
                                     :active="route().current('cart')"
                                 >
@@ -97,7 +97,7 @@ defineProps({
                                     ].includes(route().current())"
                                 >
                                     Your Donation
-                                </NavLink>
+                                </NavLink> -->
                                 <Dropdown width="48" class="sm:self-center">
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
@@ -129,9 +129,9 @@ defineProps({
                                         >
                                             Profile
                                         </DropdownLink>
-                                        <DropdownLink :href="route('order.list.page')">
+                                        <!-- <DropdownLink :href="route('order.list.page')">
                                             History Order
-                                        </DropdownLink>
+                                        </DropdownLink> -->
                                         <DropdownLink
                                             :href="route('logout')"
                                             method="post"
@@ -146,14 +146,14 @@ defineProps({
                             <template v-else>
                                 <Link
                                     :href="route('login')"
-                                    class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white self-center focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
+                                    class="font-semibold text-gray-600 hover:text-gray-900 self-center focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
                                     >Log in</Link
                                 >
 
                                 <Link
                                     v-if="canRegister"
                                     :href="route('register')"
-                                    class="ms-4 font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white self-center focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
+                                    class="ms-4 font-semibold text-gray-600 hover:text-gray-900 self-center focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
                                     >Register</Link
                                 >
                             </template>
@@ -211,7 +211,7 @@ defineProps({
                     class="sm:hidden"
                 >
                     <div class="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink
+                        <!-- <ResponsiveNavLink
                             :href="route('home')"
                             :active="route().current('home')"
                         >
@@ -231,7 +231,7 @@ defineProps({
                             :active="route().current('search')"
                         >
                             <v-icon icon="mdi-magnify"></v-icon> Search
-                        </ResponsiveNavLink>
+                        </ResponsiveNavLink> -->
                     </div>
 
                     <!-- Responsive Settings Options -->
@@ -249,7 +249,7 @@ defineProps({
                         </div>
 
                         <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink
+                            <!-- <ResponsiveNavLink
                                 :href="route('cart')"
                                 :active="route().current('cart')"
                             >
@@ -272,7 +272,7 @@ defineProps({
                                 ].includes(route().current())"
                             >
                                 <v-icon icon="mdi-charity"></v-icon> Your Donation
-                            </ResponsiveNavLink>
+                            </ResponsiveNavLink> -->
                             <ResponsiveNavLink
                                 :href="route('profile.edit')"
                                 :active="route().current('profile.edit')"

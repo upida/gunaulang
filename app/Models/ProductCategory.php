@@ -9,13 +9,10 @@ class ProductCategory extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
+        'store_id',
         'product_id',
-        'category',
+        'name',
+        'parent_id',
     ];
 }

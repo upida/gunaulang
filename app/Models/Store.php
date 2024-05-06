@@ -9,20 +9,22 @@ class Store extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'user_id',
-        'title',
+        'storename',
+        'name',
         'description',
-        'email',
-        'phone',
-        'photo',
+        'logo',
         'cover',
+        'phone',
         'address',
-        'active'
+        'subdistrict',
+        'district',
+        'city',
+        'province',
+        'latitude',
+        'longitude',
+        'gmaps_point',
+        'notes',
     ];
 }
