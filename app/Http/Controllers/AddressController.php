@@ -84,7 +84,7 @@ class AddressController extends Controller
                 'notes' => $request->get('notes'),
             ]);
 
-            return Redirect::to('/address');
+            return Redirect::to('/profile/address');
         } catch (Exception $e) {
             throw new WebException($e->getMessage(), 500);
         }

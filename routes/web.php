@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SearchController;
@@ -61,7 +62,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     Route::get('/cart', [CartController::class, 'cart'])->name('cart'); # customer.7
     Route::post('/cart/add', [CartController::class, 'add']);
-    Route::post('/cart/edit', [CartController::class, 'edit']); # *
+    Route::post('/cart/edit', [CartController::class, 'edit']);
 
     Route::post('/order', [OrderController::class, 'order'])->name('order'); # customer.8
     Route::post('/order/add', [OrderController::class, 'add']);
@@ -69,7 +70,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/order/{id}', [OrderController::class, 'detail'])->name('order.detail'); # customer.11
     Route::get('/payment_gateway_demo', [OrderController::class, 'payment_gateway_demo'])->name('payment_gateway_demo'); # customer.9
     Route::get('/order/payment/callback', [OrderController::class, 'payment_callback'])->name('order.payment.callback'); # customer.10
+    
 });
+
+Route::get('/test', [TestController::class, 'csrf']);
 
 Route::get('', [HomeController::class, 'home'])->name('home'); # customer.1 seller.1
 Route::get('/search', [SearchController::class, 'search'])->name('search'); # customer.5
