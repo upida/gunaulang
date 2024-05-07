@@ -75,9 +75,9 @@ class HomeController extends Controller
                         )
                     ) AS distance', 
                     [
-                        $$data['address']['latitude'],
-                        $$data['address']['longitude'],
-                        $$data['address']['latitude']
+                        $data['address']['latitude'],
+                        $data['address']['longitude'],
+                        $data['address']['latitude']
                     ]
                 );
             } 
