@@ -1,6 +1,7 @@
 <script setup>
 import { Head, Link, router } from "@inertiajs/vue3";
 import BasicLayout from "@/Layouts/BasicLayout.vue";
+import TextInput from "@/Components/TextInput.vue";
 import { ref } from "vue";
 
 defineProps({
@@ -43,7 +44,7 @@ const categories = ref([
 
     <BasicLayout :canLogin="canLogin" :canRegister="canRegister">
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
                 <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                     <div class="flex justify-between items-center w-full">
                         <div class="flex items-center space-x-5">
@@ -63,7 +64,7 @@ const categories = ref([
                 </div>
 
                 <div class="p-4 sm:p-8 sm:rounded-lg">
-                    <div class="flex items-center space-x-8">
+                    <div class="flex items-center space-x-8 mb-5">
                         <a
                             v-for="cat in categories"
                             class="rounded-full mx-auto w-36 h-36 cursor-pointer text-center"
@@ -76,8 +77,18 @@ const categories = ref([
                         </a>
                     </div>
                 </div>
+                <div class="p-5 mx-20 sm:rounded-lg bg-white shadow">
+                    <TextInput
+                        id="name"
+                        type="text"
+                        class="w-full"
+                        placeholder="Cari"
+                        autofocus
+                        autocomplete="name"
+                    />
+                </div>
                 <div class="p-4 sm:p-8 sm:rounded-lg grid grid-cols-4 gap-6">
-                    <v-card v-for="i in 6" class="mx-auto" max-width="400">
+                    <v-card v-for="i in 6" class="" max-width="400">
                         <v-img
                             class="align-end text-white"
                             height="200"
@@ -89,26 +100,13 @@ const categories = ref([
                             > -->
                         </v-img>
 
-                        <v-card-subtitle class="pt-4">
+                        <v-card-title class="pt-4">
                             Nama Produk
-                        </v-card-subtitle>
+                        </v-card-title>
 
                         <v-card-text>
                             <div>Deskripsi Produk</div>
                         </v-card-text>
-
-                        <v-card-actions>
-                            <v-btn
-                                prepend-icon="mdi-cart-plus"
-                                color="black"
-                                text="Masukkan keranjang"
-                                class="w-full px-5"
-                                variant="flat"
-                            >
-                                <template v-slot:prepend>
-                                    <v-icon color="white"></v-icon> </template
-                            ></v-btn>
-                        </v-card-actions>
                     </v-card>
                 </div>
             </div>
