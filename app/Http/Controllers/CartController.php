@@ -101,9 +101,6 @@ class CartController extends Controller
         }
     }
     
-    /**
-     * Kalau quantity 0 = hapus
-     */
     public function edit(Request $request) {
         try {
             $user = $request->user();
@@ -128,8 +125,14 @@ class CartController extends Controller
 
             if ($product->stock < $quantity) throw new ApiException('Product stock is less than quantity', 400);
 
-            $cart_product->quantity = $quantity;
-            $cart_product->save();
+            if ($quantity > 0) {
+                $cart_product->quantity = $quantity;
+                $cart_product->save();
+            } else {
+                $cart_product->delete();
+                $cart_product = CartProduct::where('cart_id', '=', $cart->id)->first();
+                if (!$cart_product) $cart->delete();
+            }
 
             return response()->json([
                 'data' => [
