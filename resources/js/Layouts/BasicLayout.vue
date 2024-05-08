@@ -72,7 +72,7 @@ defineProps({
                             <!-- Settings Dropdown -->
                             <div
                                 v-if="canLogin && $page.props.auth.user"
-                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
+                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex sm:items-center"
                             >
                                 <!-- <NavLink
                                     :href="route('cart')"
@@ -98,6 +98,14 @@ defineProps({
                                 >
                                     Your Donation
                                 </NavLink> -->
+                                <v-icon
+                                    icon="mdi-cart-outline"
+                                    class="cursor-pointer"
+                                ></v-icon>
+                                <v-icon
+                                    icon="mdi-store-outline"
+                                    class="cursor-pointer"
+                                ></v-icon>
                                 <Dropdown width="48" class="sm:self-center">
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
@@ -319,12 +327,8 @@ defineProps({
                 <slot />
             </main>
 
-            <footer
-                v-if="$slots.footer"
-                class="bg-white"
-            >
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                </div>
+            <footer v-if="$slots.footer" class="bg-white">
+                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8"></div>
             </footer>
         </div>
     </div>
