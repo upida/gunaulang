@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Redirect;
 use Route;
+use Storage;
+use Illuminate\Validation\Rules\File;
 
 class MyStoreController extends Controller
 {
@@ -82,7 +84,7 @@ class MyStoreController extends Controller
                 'latitude' => 'nullable|string|max:20',
                 'longitude' => 'nullable|string|max:20',
                 'gmaps_point' => 'nullable|string|max:20',
-                'notes' => 'required|string|max:50',
+                'notes' => 'nullable|string|max:50',
             ],[
                 'storename.regex' => 'The storename field format only allows alphabets, numbers, and underscores (_). The length is 3 to 20 characters.',
                 'phone.regex' => 'The phone field format starts with 0. The length is 9 to 13 characters.'
@@ -200,39 +202,63 @@ class MyStoreController extends Controller
             if (!$store) return Redirect::to('/mystore/create');
 
             $request->validate([
-                'store_id' => 'required|boolean',
                 'title' => 'required|string|max:20',
-                'description' => 'required|string|regex:/^[a-z0-9_-]{3,15}$/',
-                'stock' => 'required|string|max:100',
-                'is_new' => 'required|string|max:50',
-                'is_food' => 'required|string|max:50',
-                'is_active' => 'required|string|max:20',
-                'price' => 'required|string|max:20',
-                'expired_at' => 'nullable|string|max:20',
-                'likes' => 'nullable|string|max:20',
-                'media' => 'required|array',
-                'media.*' => 'required|string',
+                'description' => 'nullable|string',
+                'stock' => 'required|integer|min:1',
+                'is_new' => 'nullable|boolean',
+                'is_food' => 'nullable|boolean',
+                'is_active' => 'nullable|boolean',
+                'price' => 'required|decimal:0',
+                'expired_at' => 'nullable|date|after:today',
+                'media.*' => [
+                    'required',
+                    File::types([
+                        'jpg',
+                        'jpeg',
+                        'png',
+                        'bmp',
+                        'gif',
+                        'svg',
+                        'webp',
+                        'flv',
+                        'mp4',
+                        'mov',
+                        'avi',
+                        'wmv'
+                    ])
+                    ->max(12 * 1024)
+                ],
             ],[
                 'phone.regex' => 'The phone field format starts with 0. The length is 9 to 13 characters.'
             ]);
 
-            $product = Product::create([
-                'store_id' => $user->id,
-                'title' => $request->get('is_active'),
-                'description' => $request->get('name'),
-                'stock' => $request->get('phone'),
-                'is_new' => $request->get('address'),
-                'is_food' => $request->get('subdistrict'),
-                'is_active' => $request->get('district'),
-                'price' => $request->get('city'),
-                'expired_at' => $request->get('province'),
-                'likes' => $request->get('latitude'),
-            ]);
+            $title = $request->get('title');
+            $description = $request->get('description');
+            $stock = $request->get('stock');
+            $is_new = $request->get('is_new');
+            $is_food = $request->get('is_food');
+            $is_active = $request->get('is_active');
+            $price = $request->get('price');
+            $expired_at = $request->get('expired_at');
+
+            $add_products = [];
+            $add_products['store_id'] = $store->id;
+            $add_products['title'] = $title;
+            if ($description) $add_products['description'] = $description;
+            $add_products['stock'] = $stock;
+            if ($is_new) $add_products['is_new'] = $is_new;
+            if ($is_food) $add_products['is_food'] = $is_food;
+            if ($is_active) $add_products['is_active'] = $is_active;
+            $add_products['price'] = $price;
+            if ($expired_at) $add_products['expired_at'] = $expired_at;
+
+            $product = Product::create($add_products);
 
             $all_media = [];
-            foreach($request->get('media') as $media) {
+            foreach($request->file('media') as $media) {
                 // upload media
-                $path = $media;
+                $path = Storage::disk('public')->putFile('Media/' . $user->id, $media);
+
                 $all_media[] = [
                     'product_id' => $product->id,
                     'path' => $path
