@@ -84,7 +84,7 @@ class SearchController extends Controller
             $product = $product->orderBy('products.created_at', 'desc');
             $product = $product->get()->toArray();
 
-            return Inertia::render('Search', [
+            return Inertia::render('Search/Index', [
                 'canLogin' => Route::has('login'),
                 'canRegister' => Route::has('register'),
                 'data' => [
