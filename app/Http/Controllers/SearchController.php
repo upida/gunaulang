@@ -18,8 +18,11 @@ class SearchController extends Controller
 
             $is_new = $request->get('is_new');
             $is_food = $request->get('is_food');
-            $price_sign = $request->get('price_sign');
-            $expired_at_sign = $request->get('expired_at_sign');
+            $price_start = $request->get('price_start');
+            $price_end = $request->get('price_end');
+            $expired_at_start = $request->get('expired_at_start');
+            $expired_at_end = $request->get('expired_at_end');
+            $keyword = $request->get('keyword');
 
             $address = [];
             if ($user) {
@@ -30,7 +33,7 @@ class SearchController extends Controller
                 ->first();
             }
 
-            $today = date('Y-m-d');
+            // $today = date('Y-m-d');
 
             $product = Product::select('products.*')
             ->select('stores.*');
@@ -67,15 +70,27 @@ class SearchController extends Controller
             # processed waste : is_new true, is_food false
 
             $where = [];
+
             if ($is_new) $where[] = ['products.is_new', '=', $is_new];
+            
             if ($is_food) $where[] = ['products.is_food', '=', $is_food];
-            if ($price_sign) $where[] = ['products.price', $price_sign, 0];
-            if ($expired_at_sign) $where[] = ['products.expired_at', $expired_at_sign, $today];
+            
+            if ($price_start && $price_end) {
+                $where[] = ['products.price', '>=', $price_start];
+                $where[] = ['products.price', '<=', $price_end];
+            }
+            
+            if ($expired_at_start && $expired_at_end) {
+                $where[] = ['products.expired_start', '>=', $expired_at_start];
+                $where[] = ['products.expired_end', '<=', $expired_at_end];
+            }
 
             $product = $product->where(array_merge([
                 ['products.is_active', '=', true],
                 ['products.stock', '>', 0],
             ], $where));
+
+            if ($keyword) $product = $product->whereAny(['products.title', 'products.description'], 'LIKE', "%" . $keyword . "%");
 
             if ($user && !empty($address->latitude) && !empty($address->longitude)) {
                 $product = $product->orderBy('distance');
