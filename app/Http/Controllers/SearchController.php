@@ -92,15 +92,13 @@ class SearchController extends Controller
             
             if ($is_food) $where[] = ['products.is_food', '=', $is_food];
             
-            if ($price_start && $price_end) {
-                $where[] = ['products.price', '>=', $price_start];
-                $where[] = ['products.price', '<=', $price_end];
-            }
+            if ($price_start) $where[] = ['products.price', '>=', $price_start];
+
+            if ($price_end) $where[] = ['products.price', '<=', $price_end];
             
-            if ($expired_at_start && $expired_at_end) {
-                $where[] = ['products.expired_start', '>=', $expired_at_start];
-                $where[] = ['products.expired_end', '<=', $expired_at_end];
-            }
+            if ($expired_at_start) $where[] = ['products.expired_start', '>=', $expired_at_start];
+
+            if ($expired_at_end) $where[] = ['products.expired_end', '<=', $expired_at_end];
 
             $product = $product->where(array_merge([
                 ['products.is_active', '=', true],
