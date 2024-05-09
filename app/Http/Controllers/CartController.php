@@ -19,9 +19,15 @@ class CartController extends Controller
         try {
             $user = $request->user();
 
-            $data = Cart::select('stores.name as storename, stores.name as store_name')
-            ->select('cart_products.quantity as quantity')
-            ->select('products.id as id, products.title as title, products.stock as stock, products.price as price')
+            $data = Cart::select(
+                'stores.name as storename',
+                'stores.name as store_name',
+                'cart_products.quantity as quantity',
+                'products.id as id',
+                'products.title as title',
+                'products.stock as stock',
+                'products.price as price'
+            )
             ->join('stores', 'carts.store_id', '=', 'stores.id')
             ->join('cart_products', 'carts.id', '=', 'cart_products.cart_id')
             ->join('products', 'cart_products.product_id', '=', 'products.id')

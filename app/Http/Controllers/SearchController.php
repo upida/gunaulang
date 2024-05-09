@@ -35,8 +35,23 @@ class SearchController extends Controller
 
             // $today = date('Y-m-d');
 
-            $product = Product::select('products.*')
-            ->select('stores.*');
+            $product = Product::select(
+                "products.store_id",
+                "products.title",
+                "products.description",
+                "products.stock",
+                "products.is_new",
+                "products.is_food",
+                "products.is_active",
+                "products.price",
+                "products.expired_at",
+                "products.likes",
+                "stores.storename",
+                "stores.name",
+                "stores.province",
+                "stores.latitude",
+                "stores.longitude"
+            );
 
             if ($user && !empty($address->latitude) && !empty($address->longitude)) {
                 $product = $product

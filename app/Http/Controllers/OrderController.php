@@ -105,9 +105,26 @@ class OrderController extends Controller
         try {
             $user = $request->user();
 
-            $orders = Order::select('orders.*')
-            ->select('order_address.*')
-            ->select('store.*')
+            $orders = Order::select(
+                "orders.total",
+                "orders.status",
+                "stores.storename",
+                "stores.name as store_name",
+                "stores.province as store_province",
+                "stores.latitude as store_latitude",
+                "stores.longitude as store_longitude",
+                "order_address.name as order_name",
+                "order_address.phone as order_phone",
+                "order_address.address as order_address",
+                "order_address.subdistrict as order_subdistrict",
+                "order_address.district as order_district",
+                "order_address.city as order_city",
+                "order_address.province as order_province",
+                "order_address.latitude as order_latitude",
+                "order_address.longitude as order_longitude",
+                "order_address.gmaps_point as order_gmaps_point",
+                "order_address.notes as order_notes",
+            )
             ->join('order_address', 'order_address.order_id', '=', 'orders.id')
             ->join('store', 'store.id', '=', 'orders.store_id')
             ->where('orders.user_id', '=', $user->id)
