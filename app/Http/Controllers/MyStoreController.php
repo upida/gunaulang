@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\WebException;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductMedia;
 use App\Models\Store;
@@ -25,17 +26,19 @@ class MyStoreController extends Controller
 
             if (!$store) return Redirect::to('/mystore/create');
 
-            $products = Product::where('store_id', $store->id)
-            ->orderBy('created_at', 'desc')
-            ->limit(100)
-            ->get()
-            ->toArray();
+            // $products = Product::where('store_id', $store->id)
+            // ->orderBy('created_at', 'desc')
+            // ->limit(100)
+            // ->get()
+            // ->toArray();
 
             return Inertia::render('Mystore/Index', [
                 'canLogin' => Route::has('login'),
                 'canRegister' => Route::has('register'),
-                'store' => $store,
-                'product' => $products,
+                'data' => [
+                    'store' => $store,
+                    // 'product' => $products,
+                ]
             ]);
         } catch (Exception $e) {
             throw new WebException($e->getMessage(), 500);
@@ -139,10 +142,7 @@ class MyStoreController extends Controller
 
     public function verification(Request $request) {
         try {
-            return Inertia::render('Mystore/Verification', [
-                'canLogin' => Route::has('login'),
-                'canRegister' => Route::has('register'),
-            ]);
+            return Redirect::to('/mystore/verification');
         } catch (Exception $e) {
             throw new WebException($e->getMessage(), 500);
         }
@@ -163,11 +163,13 @@ class MyStoreController extends Controller
             ->get()
             ->toArray();
 
-            return Inertia::render('Mystore/Product', [
+            return Inertia::render('Mystore/Product/Index', [
                 'canLogin' => Route::has('login'),
                 'canRegister' => Route::has('register'),
-                'store' => $store,
-                'product' => $product,
+                'data' => [
+                    'store' => $store,
+                    'product' => $product,
+                ]
             ]);
         } catch (Exception $e) {
             throw new WebException($e->getMessage(), 500);
@@ -207,10 +209,9 @@ class MyStoreController extends Controller
                 'stock' => 'required|integer|min:1',
                 'is_new' => 'nullable|boolean',
                 'is_food' => 'nullable|boolean',
-                'is_active' => 'nullable|boolean',
                 'price' => 'required|decimal:0',
                 'expired_at' => 'nullable|date|after:today',
-                'media.*' => [
+                'media.*.file' => [
                     'required',
                     File::types([
                         'jpg',
@@ -237,7 +238,6 @@ class MyStoreController extends Controller
             $stock = $request->get('stock');
             $is_new = $request->get('is_new');
             $is_food = $request->get('is_food');
-            $is_active = $request->get('is_active');
             $price = $request->get('price');
             $expired_at = $request->get('expired_at');
 
@@ -248,16 +248,15 @@ class MyStoreController extends Controller
             $add_products['stock'] = $stock;
             if ($is_new) $add_products['is_new'] = $is_new;
             if ($is_food) $add_products['is_food'] = $is_food;
-            if ($is_active) $add_products['is_active'] = $is_active;
             $add_products['price'] = $price;
-            if ($expired_at) $add_products['expired_at'] = $expired_at;
+            if ($expired_at) $add_products['expired_at'] = date('Y-m-d', strtotime($expired_at));
 
             $product = Product::create($add_products);
 
             $all_media = [];
             foreach($request->file('media') as $media) {
                 // upload media
-                $path = Storage::disk('public')->putFile('Media/' . $user->id, $media);
+                $path = Storage::disk('public')->putFile('Media/' . $user->id, $media['file']);
 
                 $all_media[] = [
                     'product_id' => $product->id,
@@ -275,32 +274,77 @@ class MyStoreController extends Controller
     
     public function order(Request $request) {
         try {
-            return Inertia::render('Mystore/Order', [
+            $user = $request->user();
+
+            $store = Store::where('user_id', $user->id)
+            ->first();
+
+            if (!$store) return Redirect::to('/mystore/create');
+
+            $orders = Order::where('store_id', '=', $store->id)
+            ->orderBy('id', 'desc')
+            ->get()->toArray();
+
+            return Inertia::render('Mystore/Order/Index', [
                 'canLogin' => Route::has('login'),
                 'canRegister' => Route::has('register'),
+                'data' => [
+                    'order' => $orders
+                ]
             ]);
         } catch (Exception $e) {
             throw new WebException($e->getMessage(), 500);
         }
     }
 
-    public function order_edit_page(Request $request) {
+    public function order_edit_page(Request $request, int $id) {
         try {
+            $user = $request->user();
+
+            $store = Store::where('user_id', $user->id)
+            ->first();
+
+            if (!$store) return Redirect::to('/mystore/create');
+
+            $order = Order::where('store_id', '=', $store->id)
+            ->where('id', '=', $id)
+            ->first();
+
+            if (!$order) throw new WebException('Order not found', 404);
+
             return Inertia::render('Mystore/Order/Edit', [
                 'canLogin' => Route::has('login'),
                 'canRegister' => Route::has('register'),
+                'data' => [
+                    'order' => $order
+                ]
             ]);
         } catch (Exception $e) {
             throw new WebException($e->getMessage(), 500);
         }
     }
 
-    public function order_edit(Request $request) {
+    public function order_edit(Request $request, int $id) {
         try {
-            return Inertia::render('Mystore/Order/Edit', [
-                'canLogin' => Route::has('login'),
-                'canRegister' => Route::has('register'),
-            ]);
+            $user = $request->user();
+
+            $status = $request->get('status');
+
+            $store = Store::where('user_id', $user->id)
+            ->first();
+
+            if (!$store) return Redirect::to('/mystore/create');
+
+            $order = Order::where('store_id', '=', $store->id)
+            ->where('id', '=', $id)
+            ->first();
+
+            if (!$order) throw new WebException('Order not found', 404);
+
+            $order->status = $status;
+            $order->save();
+
+            return Redirect::to('/mystore/order');
         } catch (Exception $e) {
             throw new WebException($e->getMessage(), 500);
         }

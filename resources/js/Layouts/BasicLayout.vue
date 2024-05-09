@@ -74,38 +74,62 @@ defineProps({
                                 v-if="canLogin && $page.props.auth.user"
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex sm:items-center"
                             >
-                                <!-- <NavLink
-                                    :href="route('cart')"
-                                    :active="route().current('cart')"
-                                >
-                                    <v-tooltip location="bottom" text="Cart">
-                                        <template v-slot:activator="{ props }">
-                                            <v-icon
-                                                v-bind="props"
-                                                icon="mdi-cart"
-                                            ></v-icon>
-                                        </template>
-                                    </v-tooltip>
-                                </NavLink>
-                                <NavLink
-                                    :href="route('donator.page')"
-                                    :active="[
-                                        'donator.page',
-                                        'donator.store.page',
-                                        'donator.donate.page',
-                                        'donator.order.page',
-                                    ].includes(route().current())"
-                                >
-                                    Your Donation
-                                </NavLink> -->
                                 <v-icon
                                     icon="mdi-cart-outline"
                                     class="cursor-pointer"
                                 ></v-icon>
-                                <v-icon
-                                    icon="mdi-store-outline"
-                                    class="cursor-pointer"
-                                ></v-icon>
+                                <Dropdown width="48" class="sm:self-center">
+                                    <template #trigger>
+                                        <span class="inline-flex rounded-md">
+                                            <button
+                                                type="button"
+                                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
+                                            >
+                                                <v-icon
+                                                    icon="mdi-store-outline"
+                                                    class="cursor-pointer"
+                                                ></v-icon>
+
+                                                <svg
+                                                    class="ms-2 -me-0.5 h-4 w-4"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    viewBox="0 0 20 20"
+                                                    fill="currentColor"
+                                                >
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                        clip-rule="evenodd"
+                                                    />
+                                                </svg>
+                                            </button>
+                                        </span>
+                                    </template>
+
+                                    <template #content>
+                                        <DropdownLink
+                                            :href="route('mystore')"
+                                        >
+                                            Toko
+                                        </DropdownLink>
+                                        <DropdownLink
+                                            :href="route('mystore.product')"
+                                        >
+                                            Produk
+                                        </DropdownLink>
+                                        <DropdownLink
+                                            :href="route('mystore.order')"
+                                        >
+                                            Pesanan
+                                        </DropdownLink>
+                                        <DropdownLink
+                                            :href="route('coin')"
+                                            as="button"
+                                        >
+                                            Koin
+                                        </DropdownLink>
+                                    </template>
+                                </Dropdown>
                                 <Dropdown width="48" class="sm:self-center">
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
