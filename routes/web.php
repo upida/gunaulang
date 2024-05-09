@@ -67,7 +67,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/order', [OrderController::class, 'order'])->name('order'); # customer.8
     Route::post('/order/add', [OrderController::class, 'add']);
     Route::post('/order/payment', [OrderController::class, 'payment']);
+    Route::get('/order', [OrderController::class, 'order_list'])->name('order.list'); # *
     Route::get('/order/{id}', [OrderController::class, 'detail'])->name('order.detail'); # customer.11
+    Route::get('/order/{id}', [OrderController::class, 'detail_edit']);
     Route::get('/payment_gateway_demo', [OrderController::class, 'payment_gateway_demo'])->name('payment_gateway_demo'); # customer.9
     Route::get('/order/payment/callback', [OrderController::class, 'payment_callback'])->name('order.payment.callback'); # customer.10
     

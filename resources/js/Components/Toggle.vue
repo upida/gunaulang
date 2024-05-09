@@ -26,5 +26,5 @@ const proxyChecked = computed({
 </script>
 
 <template>
-    <v-switch :label="props.label" v-model="proxyChecked" :modelValue="value"></v-switch>
+    <v-switch :label="props.label" v-model="proxyChecked" :modelValue="value" color="success"></v-switch>
 </template>

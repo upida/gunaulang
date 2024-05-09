@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\WebException;
+use App\Models\Coin;
+use App\Models\CoinHistory;
 use App\Models\Order;
 use App\Models\OrderAddress;
 use App\Models\OrderPayment;
@@ -92,6 +94,32 @@ class OrderController extends Controller
                     'address' => $address,
                     'products' => array_values($data_products),
                     'total' => $total
+                ]
+            ]);
+        } catch (Exception $e) {
+            throw new WebException($e->getMessage(), 500);
+        }
+    }
+
+    public function order_list(Request $request) {
+        try {
+            $user = $request->user();
+
+            $orders = Order::select('orders.*')
+            ->select('order_address.*')
+            ->select('store.*')
+            ->join('order_address', 'order_address.order_id', '=', 'orders.id')
+            ->join('store', 'store.id', '=', 'orders.store_id')
+            ->where('orders.user_id', '=', $user->id)
+            ->orderBy('orders.id', 'desc')
+            ->get()
+            ->toArray();
+
+            return Inertia::render('Order/List/Index', [
+                'canLogin' => Route::has('login'),
+                'canRegister' => Route::has('register'),
+                'data' => [
+                    'order' => $orders
                 ]
             ]);
         } catch (Exception $e) {
@@ -226,6 +254,8 @@ class OrderController extends Controller
                 ]);
                 $payment->received = true;
                 $payment->save();
+
+                Order::where('id', '=', $order['id'])->update(['status' => 'waiting to be picked up']);
             }
 
             return Inertia::render('Order/Payment/Callback', [
@@ -267,6 +297,49 @@ class OrderController extends Controller
                     'payment' => $payment,
                 ]
             ]);
+        } catch (Exception $e) {
+            throw new WebException($e->getMessage(), 500);
+        }
+    }
+
+    public function detail_edit(Request $request, int $id) {
+        try {
+            $user = $request->user();
+
+            $status = $request->get('status');
+
+            $order = Order::where('id', '=', $id)->where('user_id', '=', $user->id)->first();
+            if (!$order) throw new WebException('Order not found', 404);
+            
+            $store = Store::where('store_id', '=', $order->store_id)->first();
+            if (!$store) throw new WebException('Store not found', 404);
+
+            $order->status = $status;
+            $order->save();
+
+            if ($status == 'completed') {
+                $coin = Coin::where('store_id', '=', $store->id)->first();
+                if (!$coin) $coin = Coin::create([
+                    'user_id' => $store->user_id,
+                    'balance' => $order->total
+                ]);
+                else {
+                    $coin->balance = $coin->balance + $order->total;
+                    $coin->save();
+
+                    CoinHistory::create([
+                        'user_id' => $store->user_id,
+                        'order_id' => $order->id,
+                        'title' => 'Products sold',
+                        'debit' => true,
+                        'status' => 'paid',
+                        'from' => $user->username,
+                        'total' => $order->total,
+                    ]);
+                }
+            }
+
+            return Redirect::to('/order');
         } catch (Exception $e) {
             throw new WebException($e->getMessage(), 500);
         }
