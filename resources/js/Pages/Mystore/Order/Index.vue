@@ -36,6 +36,8 @@ defineProps({
                             <th class="text-left">
                                 Status
                             </th>
+                            <th class="text-left">
+                            </th>
                         </tr>
                         </thead>
                         <tbody>
@@ -47,6 +49,9 @@ defineProps({
                             <td>{{ item.username }}</td>
                             <td>{{ item.total }}</td>
                             <td>{{ item.status }}</td>
+                            <td>
+                                <v-btn :href="route('mystore.order.edit', {id: item.id})">Detail</v-btn>
+                            </td>
                         </tr>
                         </tbody>
                     </v-table>
