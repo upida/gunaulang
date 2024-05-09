@@ -281,8 +281,18 @@ class MyStoreController extends Controller
 
             if (!$store) return Redirect::to('/mystore/create');
 
-            $orders = Order::where('store_id', '=', $store->id)
-            ->orderBy('id', 'desc')
+            $orders = Order::select([
+                'orders.id',
+                'orders.total',
+                'orders.status',
+                'users.username',
+            ])
+            ->selectRaw("
+                DATE_FORMAT(orders.created_at, '%Y-%m-%d') as created
+            ")
+            ->join('users', 'users.id', '=', 'orders.user_id')
+            ->where('orders.store_id', '=', $store->id)
+            ->orderBy('orders.id', 'desc')
             ->get()->toArray();
 
             return Inertia::render('Mystore/Order/Index', [

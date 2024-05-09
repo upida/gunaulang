@@ -162,20 +162,21 @@ class OrderController extends Controller
                 ]);
                 $params['orders'][] = $order->id;
 
-                OrderAddress::create([
-                    'order_id' => $order->id,
-                    'name' => $address['name'] ?? '',
-                    'phone' => $address['phone'] ?? '',
-                    'address' => $address['address'] ?? '',
-                    'subdistrict' => $address['subdistrict'] ?? '',
-                    'district' => $address['district'] ?? '',
-                    'city' => $address['city'] ?? '',
-                    'province' => $address['province'] ?? '',
-                    'latitude' => $address['latitude'] ?? '',
-                    'longitude' => $address['longitude'] ?? '',
-                    'gmaps_point' => $address['gmaps_point'] ?? '',
-                    'notes' => $address['notes'] ?? '',
-                ]);
+                $create_address = [];
+                $create_address['order_id'] = $order->id;
+                $create_address['name'] = $address['name'];
+                $create_address['phone'] = $address['phone'];
+                $create_address['address'] = $address['address'];
+                $create_address['subdistrict'] = $address['subdistrict'];
+                $create_address['district'] = $address['district'];
+                $create_address['city'] = $address['city'];
+                $create_address['province'] = $address['province'];
+                if (isset($address['latitude']) && !empty($address['latitude'])) $create_address['latitude'] = $address['latitude'];
+                if (isset($address['longitude']) && !empty($address['longitude'])) $create_address['longitude'] = $address['longitude'];
+                if (isset($address['gmaps_point']) && !empty($address['gmaps_point'])) $create_address['gmaps_point'] = $address['gmaps_point'];
+                if (isset($address['notes']) && !empty($address['notes'])) $create_address['notes'] = $address['notes'];
+
+                OrderAddress::create($create_address);
 
                 $product_detail = [];
                 foreach ($product['products'] as $i) {
