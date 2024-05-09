@@ -3,6 +3,8 @@ import { Head, Link, useForm, router } from "@inertiajs/vue3";
 import BasicLayout from "@/Layouts/BasicLayout.vue";
 import TextInput from "@/Components/TextInput.vue";
 import Address from "@/Components/Address.vue";
+import CardProduct from "@/Components/CardProduct.vue";
+import CardSearch from "@/Components/CardSearch.vue";
 import { ref } from "vue";
 
 defineProps({
@@ -16,21 +18,30 @@ defineProps({
         type: Object,
     },
 });
-const query = ref("");
-const doSearch = () => {
-    router.get("/search", query.value);
-    query.value = "";
+const doSearch = (params) => {
+    router.get("/search", params);
 };
+
 const categories = ref([
     {
         label: "Makan gratis disini!",
         image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        action: () => {},
+        action: () => {
+            doSearch({
+                is_new: 1,
+                is_food: 1,
+            });
+        },
     },
     {
         label: "Makan murah",
         image: "https://images.unsplash.com/photo-1606787366850-de6330128bfc?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        action: () => {},
+        action: () => {
+            doSearch({
+                is_new: 0,
+                is_food: 1,
+            });
+        },
     },
     {
         label: "Butuh limbah makanan?",
@@ -43,6 +54,15 @@ const categories = ref([
         action: () => {},
     },
 ]);
+const moneyFormat = (args) => {
+    if (args !== null && args !== undefined && args > 0) {
+        args = Math.round(args);
+
+        // Format the input value in Indonesian currency format
+        return args.toLocaleString("id-ID");
+    }
+    return 0;
+};
 </script>
 
 <template>
@@ -50,7 +70,6 @@ const categories = ref([
 
     <BasicLayout :canLogin="canLogin" :canRegister="canRegister">
         <div class="py-12">
-            {{data}}
             <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 space-y-8">
                 <Address
                     :address="data.address.address"
@@ -59,8 +78,9 @@ const categories = ref([
 
                 <div class="p-4 sm:p-8 sm:rounded-lg">
                     <div class="flex items-center space-x-8 mb-5">
-                        <a
+                        <div
                             v-for="cat in categories"
+                            @click="cat.action"
                             class="rounded-full mx-auto w-14 h-14 sm:w-36 sm:h-36 sm:text-md text-sm cursor-pointer text-center"
                         >
                             <img
@@ -68,39 +88,224 @@ const categories = ref([
                                 :src="cat.image"
                             />
                             {{ cat.label }}
-                        </a>
+                        </div>
                     </div>
                 </div>
-                <div class="p-5 mx-20 sm:rounded-lg bg-white shadow">
-                    <TextInput
-                        id="name"
-                        type="text"
-                        class="w-full"
-                        placeholder="Cari"
-                        autofocus
-                        autocomplete="name"
-                        @keyup.enter="doSearch"
-                    />
-                </div>
-                <div class="p-4 sm:p-8 sm:rounded-lg grid grid-cols-4 gap-6">
-                    <v-card v-for="i in 6" class="" max-width="400">
-                        <v-img
-                            class="align-end text-white"
-                            height="200"
-                            src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
-                            cover
+                <CardSearch @search="doSearch" class="mx-20" />
+                <div v-if="data.product.free_food.length > 0" class="pa-4">
+                    <div class="flex justify-between items-center">
+                        <h1 class="font-bold text-lg text-uppercase">
+                            Makanan Gratis
+                        </h1>
+                        <p
+                            @click="doSearch({ is_new: 1, is_food: 1 })"
+                            class="text-green-600 items-center cursor-pointer"
                         >
-                            <!-- <v-card-title
-                                >Top 10 Australian beaches</v-card-title
-                            > -->
-                        </v-img>
+                            Lihat Semua
+                            <v-icon icon="mdi-chevron-right" class=""></v-icon>
+                        </p>
+                    </div>
+                    <v-slide-group class="!p-0 !m-0" center-active show-arrows>
+                        <v-slide-item
+                            v-for="(product, i) in data.product.cheap_food"
+                            class=""
+                        >
+                            <v-card class="ma-2" width="300">
+                                <v-img
+                                    class="text-white align-end"
+                                    height="200"
+                                    cover
+                                    src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+                                >
+                                </v-img>
 
-                        <v-card-title class="pt-4"> Nama Produk </v-card-title>
+                                <v-card-title class="pt-4">{{
+                                    product.title
+                                }}</v-card-title>
+                                <v-card-subtitle class="pt-4"
+                                    >Rp
+                                    {{
+                                        moneyFormat(product.price)
+                                    }}</v-card-subtitle
+                                >
 
-                        <v-card-text>
-                            <div>Deskripsi Produk</div>
-                        </v-card-text>
-                    </v-card>
+                                <v-card-text class="">
+                                    <div>{{ product.description }}</div>
+                                    <div
+                                        class="text-green-600 items-center flex cursor-pointer"
+                                    >
+                                        <v-icon
+                                            icon="mdi-store-outline"
+                                            class="mr-2"
+                                        ></v-icon
+                                        >{{ product.name }}
+                                    </div>
+                                </v-card-text>
+                            </v-card>
+                        </v-slide-item>
+                    </v-slide-group>
+                </div>
+                <div v-if="data.product.cheap_food.length > 0" class="pa-4">
+                    <div class="flex justify-between items-center">
+                        <h1 class="font-bold text-lg text-uppercase">
+                            Makanan Murah
+                        </h1>
+                        <p
+                            @click="doSearch({ is_new: 1, is_food: 1 })"
+                            class="text-green-600 items-center cursor-pointer"
+                        >
+                            Lihat Semua
+                            <v-icon icon="mdi-chevron-right" class=""></v-icon>
+                        </p>
+                    </div>
+                    <v-slide-group class="!p-0 !m-0" center-active show-arrows>
+                        <v-slide-item
+                            v-for="(product, i) in data.product.cheap_food"
+                            class=""
+                        >
+                            <v-card class="ma-2" width="300">
+                                <v-img
+                                    class="text-white align-end"
+                                    height="200"
+                                    cover
+                                    src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+                                >
+                                </v-img>
+
+                                <v-card-title class="pt-4">{{
+                                    product.title
+                                }}</v-card-title>
+                                <v-card-subtitle class="pt-4"
+                                    >Rp
+                                    {{
+                                        moneyFormat(product.price)
+                                    }}</v-card-subtitle
+                                >
+
+                                <v-card-text class="">
+                                    <div>{{ product.description }}</div>
+                                    <div
+                                        class="text-green-600 items-center flex cursor-pointer"
+                                    >
+                                        <v-icon
+                                            icon="mdi-store-outline"
+                                            class="mr-2"
+                                        ></v-icon
+                                        >{{ product.name }}
+                                    </div>
+                                </v-card-text>
+                            </v-card>
+                        </v-slide-item>
+                    </v-slide-group>
+                </div>
+                <div v-if="data.product.food_waste.length > 0" class="pa-4">
+                    <div class="flex justify-between items-center">
+                        <h1 class="font-bold text-lg text-uppercase">
+                            Limbah Makanan
+                        </h1>
+                        <p
+                            @click="doSearch({ is_new: 1, is_food: 1 })"
+                            class="text-green-600 items-center cursor-pointer"
+                        >
+                            Lihat Semua
+                            <v-icon icon="mdi-chevron-right" class=""></v-icon>
+                        </p>
+                    </div>
+                    <v-slide-group class="!p-0 !m-0" center-active show-arrows>
+                        <v-slide-item
+                            v-for="(product, i) in data.product.food_waste"
+                            class=""
+                        >
+                            <v-card class="ma-2" width="300">
+                                <v-img
+                                    class="text-white align-end"
+                                    height="200"
+                                    cover
+                                    src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+                                >
+                                </v-img>
+
+                                <v-card-title class="pt-4">{{
+                                    product.title
+                                }}</v-card-title>
+                                <v-card-subtitle class="pt-4"
+                                    >Rp
+                                    {{
+                                        moneyFormat(product.price)
+                                    }}</v-card-subtitle
+                                >
+
+                                <v-card-text class="">
+                                    <div>{{ product.description }}</div>
+                                    <div
+                                        class="text-green-600 items-center flex cursor-pointer"
+                                    >
+                                        <v-icon
+                                            icon="mdi-store-outline"
+                                            class="mr-2"
+                                        ></v-icon
+                                        >{{ product.name }}
+                                    </div>
+                                </v-card-text>
+                            </v-card>
+                        </v-slide-item>
+                    </v-slide-group>
+                </div>
+                <div
+                    v-if="data.product.processed_waste.length > 0"
+                    class="pa-4"
+                >
+                    <div class="flex justify-between items-center">
+                        <h1 class="font-bold text-lg text-uppercase">
+                            Produk Olahan Limbah
+                        </h1>
+                        <p
+                            @click="doSearch({ is_new: 1, is_food: 1 })"
+                            class="text-green-600 items-center cursor-pointer"
+                        >
+                            Lihat Semua
+                            <v-icon icon="mdi-chevron-right" class=""></v-icon>
+                        </p>
+                    </div>
+                    <v-slide-group class="!p-0 !m-0" center-active show-arrows>
+                        <v-slide-item
+                            v-for="(product, i) in data.product.processed_waste"
+                            class=""
+                        >
+                            <v-card class="ma-2" width="300">
+                                <v-img
+                                    class="text-white align-end"
+                                    height="200"
+                                    cover
+                                    src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+                                >
+                                </v-img>
+
+                                <v-card-title class="pt-4">{{
+                                    product.title
+                                }}</v-card-title>
+                                <v-card-subtitle class="pt-4"
+                                    >Rp
+                                    {{
+                                        moneyFormat(product.price)
+                                    }}</v-card-subtitle
+                                >
+
+                                <v-card-text class="">
+                                    <div>{{ product.description }}</div>
+                                    <div
+                                        class="text-green-600 items-center flex cursor-pointer"
+                                    >
+                                        <v-icon
+                                            icon="mdi-store-outline"
+                                            class="mr-2"
+                                        ></v-icon
+                                        >{{ product.name }}
+                                    </div>
+                                </v-card-text>
+                            </v-card>
+                        </v-slide-item>
+                    </v-slide-group>
                 </div>
             </div>
         </div>
