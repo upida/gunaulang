@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\WebException;
 use App\Models\Product;
+use App\Models\ProductMedia;
 use App\Models\UserAddress;
 use Exception;
 use Illuminate\Http\Request;
@@ -41,6 +42,7 @@ class HomeController extends Controller
 
             // product.free_food
             $data['product']['free_food'] = Product::select(
+                "products.id",
                 "products.store_id",
                 "products.title",
                 "products.description",
@@ -105,8 +107,25 @@ class HomeController extends Controller
             $data['product']['free_food'] = $data['product']['free_food']->limit(10);
             $data['product']['free_food'] = $data['product']['free_food']->get()->toArray();
 
+            $free_food_id = array_column($data['product']['free_food'], 'id');
+            $media = ProductMedia::whereIn('product_id', $free_food_id)->get()->toArray();
+
+            $data['product']['free_food'] = array_reduce($data['product']['free_food'], function (array $accumulator, array $element) {
+                $accumulator[$element['id']] = $element;
+
+                return $accumulator;
+            }, []);
+
+            foreach ($media as $m) {
+                if (!isset($data['product']['free_food'][$m['product_id']]['media'])) $data['product']['free_food'][$m['product_id']]['media'] = [];
+                $data['product']['free_food'][$m['product_id']]['media'][] = $m;
+            }
+            
+            $data['product']['free_food'] = array_values($data['product']['free_food']);
+
             // product.cheap_food
             $data['product']['cheap_food'] = Product::select(
+                "products.id",
                 "products.store_id",
                 "products.title",
                 "products.description",
@@ -170,9 +189,26 @@ class HomeController extends Controller
             $data['product']['cheap_food'] = $data['product']['cheap_food']->orderBy('products.created_at', 'desc');
             $data['product']['cheap_food'] = $data['product']['cheap_food']->limit(10);
             $data['product']['cheap_food'] = $data['product']['cheap_food']->get()->toArray();
+
+            $cheap_food_id = array_column($data['product']['cheap_food'], 'id');
+            $media = ProductMedia::whereIn('product_id', $cheap_food_id)->get()->toArray();
+
+            $data['product']['cheap_food'] = array_reduce($data['product']['cheap_food'], function (array $accumulator, array $element) {
+                $accumulator[$element['id']] = $element;
+
+                return $accumulator;
+            }, []);
+
+            foreach ($media as $m) {
+                if (!isset($data['product']['cheap_food'][$m['product_id']]['media'])) $data['product']['cheap_food'][$m['product_id']]['media'] = [];
+                $data['product']['cheap_food'][$m['product_id']]['media'][] = $m;
+            }
+            
+            $data['product']['cheap_food'] = array_values($data['product']['cheap_food']);
             
             // product.food_waste
             $data['product']['food_waste'] = Product::select(
+                "products.id",
                 "products.store_id",
                 "products.title",
                 "products.description",
@@ -237,9 +273,27 @@ class HomeController extends Controller
             $data['product']['food_waste'] = $data['product']['food_waste']->orderBy('products.created_at', 'desc');
             $data['product']['food_waste'] = $data['product']['food_waste']->limit(10);
             $data['product']['food_waste'] = $data['product']['food_waste']->get()->toArray();
+
+
+            $food_waste_id = array_column($data['product']['food_waste'], 'id');
+            $media = ProductMedia::whereIn('product_id', $food_waste_id)->get()->toArray();
+
+            $data['product']['food_waste'] = array_reduce($data['product']['food_waste'], function (array $accumulator, array $element) {
+                $accumulator[$element['id']] = $element;
+
+                return $accumulator;
+            }, []);
+
+            foreach ($media as $m) {
+                if (!isset($data['product']['food_waste'][$m['product_id']]['media'])) $data['product']['food_waste'][$m['product_id']]['media'] = [];
+                $data['product']['food_waste'][$m['product_id']]['media'][] = $m;
+            }
+            
+            $data['product']['food_waste'] = array_values($data['product']['food_waste']);
             
             // product.processed_waste
             $data['product']['processed_waste'] = Product::select(
+                "products.id",
                 "products.store_id",
                 "products.title",
                 "products.description",
@@ -301,6 +355,22 @@ class HomeController extends Controller
             $data['product']['processed_waste'] = $data['product']['processed_waste']->orderBy('products.created_at', 'desc');
             $data['product']['processed_waste'] = $data['product']['processed_waste']->limit(10);
             $data['product']['processed_waste'] = $data['product']['processed_waste']->get()->toArray();
+
+            $processed_waste_id = array_column($data['product']['processed_waste'], 'id');
+            $media = ProductMedia::whereIn('product_id', $processed_waste_id)->get()->toArray();
+
+            $data['product']['processed_waste'] = array_reduce($data['product']['processed_waste'], function (array $accumulator, array $element) {
+                $accumulator[$element['id']] = $element;
+
+                return $accumulator;
+            }, []);
+
+            foreach ($media as $m) {
+                if (!isset($data['product']['processed_waste'][$m['product_id']]['media'])) $data['product']['processed_waste'][$m['product_id']]['media'] = [];
+                $data['product']['processed_waste'][$m['product_id']]['media'][] = $m;
+            }
+            
+            $data['product']['processed_waste'] = array_values($data['product']['processed_waste']);
 
             return Inertia::render('Home', [
                 'canLogin' => Route::has('login'),

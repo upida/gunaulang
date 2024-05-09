@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\WebException;
 use App\Models\Product;
+use App\Models\ProductMedia;
 use App\Models\UserAddress;
 use Exception;
 use Illuminate\Http\Request;
@@ -36,6 +37,7 @@ class SearchController extends Controller
             // $today = date('Y-m-d');
 
             $product = Product::select(
+                "products.id",
                 "products.store_id",
                 "products.title",
                 "products.description",
@@ -90,15 +92,13 @@ class SearchController extends Controller
             
             if ($is_food) $where[] = ['products.is_food', '=', $is_food];
             
-            if ($price_start && $price_end) {
-                $where[] = ['products.price', '>=', $price_start];
-                $where[] = ['products.price', '<=', $price_end];
-            }
+            if ($price_start) $where[] = ['products.price', '>=', $price_start];
+
+            if ($price_end) $where[] = ['products.price', '<=', $price_end];
             
-            if ($expired_at_start && $expired_at_end) {
-                $where[] = ['products.expired_start', '>=', $expired_at_start];
-                $where[] = ['products.expired_end', '<=', $expired_at_end];
-            }
+            if ($expired_at_start) $where[] = ['products.expired_start', '>=', date('Y-m-d', strtotime($expired_at_start))];
+
+            if ($expired_at_end) $where[] = ['products.expired_end', '<=', date('Y-m-d', strtotime($expired_at_end))];
 
             $product = $product->where(array_merge([
                 ['products.is_active', '=', true],
@@ -113,6 +113,28 @@ class SearchController extends Controller
 
             $product = $product->orderBy('products.created_at', 'desc');
             $product = $product->get()->toArray();
+
+            $product_batch = array_chunk($product, 10);
+
+            foreach ($product_batch as $batch_key => $batch) {
+                $batch_id = array_column($batch, 'id');
+                $media = ProductMedia::whereIn('product_id', $batch_id)->get()->toArray();
+
+                $batch = array_reduce($batch, function (array $accumulator, array $element) {
+                    $accumulator[$element['id']] = $element;
+
+                    return $accumulator;
+                }, []);
+
+                foreach ($media as $m) {
+                    if (!isset($batch[$m['product_id']]['media'])) $batch[$m['product_id']]['media'] = [];
+                    $batch[$m['product_id']]['media'][] = $m;
+                }
+
+                $product_batch[$batch_key] = $batch;
+            }
+
+            $product = array_merge(...$product_batch);
 
             return Inertia::render('Search/Index', [
                 'canLogin' => Route::has('login'),
