@@ -20,7 +20,7 @@ class AddressController extends Controller
             ->get()
             ->toArray();
             
-            $active = [];
+            $active = null;
             if (isset($addresses[0]['is_active']) && $addresses[0]['is_active']) $active = $addresses[0];
 
             return Inertia::render('Profile/Address/Index', [
