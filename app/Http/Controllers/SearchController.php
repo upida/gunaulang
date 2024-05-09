@@ -96,9 +96,9 @@ class SearchController extends Controller
 
             if ($price_end) $where[] = ['products.price', '<=', $price_end];
             
-            if ($expired_at_start) $where[] = ['products.expired_start', '>=', $expired_at_start];
+            if ($expired_at_start) $where[] = ['products.expired_start', '>=', date('Y-m-d', strtotime($expired_at_start))];
 
-            if ($expired_at_end) $where[] = ['products.expired_end', '<=', $expired_at_end];
+            if ($expired_at_end) $where[] = ['products.expired_end', '<=', date('Y-m-d', strtotime($expired_at_end))];
 
             $product = $product->where(array_merge([
                 ['products.is_active', '=', true],
