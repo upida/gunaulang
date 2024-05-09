@@ -1,7 +1,8 @@
 <script setup>
-import { Head, Link, router } from "@inertiajs/vue3";
+import { Head, Link, useForm, router } from "@inertiajs/vue3";
 import BasicLayout from "@/Layouts/BasicLayout.vue";
 import TextInput from "@/Components/TextInput.vue";
+import Address from "@/Components/Address.vue";
 import { ref } from "vue";
 
 defineProps({
@@ -15,6 +16,11 @@ defineProps({
         type: Object,
     },
 });
+const query = ref("");
+const doSearch = () => {
+    router.get("/search", query.value);
+    query.value = "";
+};
 const categories = ref([
     {
         label: "Makan gratis disini!",
@@ -44,33 +50,21 @@ const categories = ref([
 
     <BasicLayout :canLogin="canLogin" :canRegister="canRegister">
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
-                <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                    <div class="flex justify-between items-center w-full">
-                        <div class="flex items-center space-x-5">
-                            <v-icon
-                                icon="mdi-map-marker-outline"
-                                class="cursor-pointer"
-                            ></v-icon>
-                            <p>
-                                {{ data.address.address }}
-                            </p>
-                        </div>
-                        <v-icon
-                            icon="mdi-pencil"
-                            class="cursor-pointer text-orange-500"
-                        ></v-icon>
-                    </div>
-                </div>
+            {{data}}
+            <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 space-y-8">
+                <Address
+                    :address="data.address.address"
+                    :name="data.address.name"
+                />
 
                 <div class="p-4 sm:p-8 sm:rounded-lg">
                     <div class="flex items-center space-x-8 mb-5">
                         <a
                             v-for="cat in categories"
-                            class="rounded-full mx-auto w-36 h-36 cursor-pointer text-center"
+                            class="rounded-full mx-auto w-14 h-14 sm:w-36 sm:h-36 sm:text-md text-sm cursor-pointer text-center"
                         >
                             <img
-                                class="w-36 h-36 object-cover rounded-full mb-3"
+                                class="w-14 h-14 sm:w-36 sm:h-36 object-cover rounded-full mb-3"
                                 :src="cat.image"
                             />
                             {{ cat.label }}
@@ -85,6 +79,7 @@ const categories = ref([
                         placeholder="Cari"
                         autofocus
                         autocomplete="name"
+                        @keyup.enter="doSearch"
                     />
                 </div>
                 <div class="p-4 sm:p-8 sm:rounded-lg grid grid-cols-4 gap-6">
@@ -100,9 +95,7 @@ const categories = ref([
                             > -->
                         </v-img>
 
-                        <v-card-title class="pt-4">
-                            Nama Produk
-                        </v-card-title>
+                        <v-card-title class="pt-4"> Nama Produk </v-card-title>
 
                         <v-card-text>
                             <div>Deskripsi Produk</div>

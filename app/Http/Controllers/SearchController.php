@@ -136,7 +136,7 @@ class SearchController extends Controller
 
             $product = array_merge(...$product_batch);
 
-            return Inertia::render('Search', [
+            return Inertia::render('Search/Index', [
                 'canLogin' => Route::has('login'),
                 'canRegister' => Route::has('register'),
                 'data' => [

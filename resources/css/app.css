@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.dp__main {
+    width: auto !important;
+}
+.dp__overlay {
+    z-index: 40 !important;
+}
+.dp__menu .dp__menu_index {
+    z-index: 40 !important;
+
+
+}
