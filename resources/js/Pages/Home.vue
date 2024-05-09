@@ -6,6 +6,7 @@ import Address from "@/Components/Address.vue";
 import CardProduct from "@/Components/CardProduct.vue";
 import CardSearch from "@/Components/CardSearch.vue";
 import { ref } from "vue";
+import { onMounted } from "vue";
 
 defineProps({
     canLogin: {
@@ -21,7 +22,9 @@ defineProps({
 const doSearch = (params) => {
     router.get("/search", params);
 };
-
+const openProduct = (store, title) => {
+    router.get(`/${store}/${title}`);
+};
 const categories = ref([
     {
         label: "Makan gratis disini!",
@@ -30,6 +33,9 @@ const categories = ref([
             doSearch({
                 is_new: 1,
                 is_food: 1,
+                price_start: 0,
+                price_end: 0,
+                expired_at_start: new Date(),
             });
         },
     },
@@ -38,31 +44,37 @@ const categories = ref([
         image: "https://images.unsplash.com/photo-1606787366850-de6330128bfc?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         action: () => {
             doSearch({
-                is_new: 0,
+                is_new: 1,
                 is_food: 1,
+                price_start: 1,
+                expired_at_start: new Date(),
             });
         },
     },
     {
         label: "Butuh limbah makanan?",
         image: "https://images.unsplash.com/photo-1553787434-45e1d245bfbb?q=80&w=2020&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        action: () => {},
+        action: () => {
+            doSearch({ is_food: 1, expired_at_end: new Date() });
+        },
     },
     {
         label: "Produk olahan limbah makananmu",
         image: "https://images.unsplash.com/photo-1587733761376-3f26fc81d17f?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        action: () => {},
+        action: () => {
+            doSearch({ is_new: 1, is_food: 0 });
+        },
     },
 ]);
-const moneyFormat = (args) => {
-    if (args !== null && args !== undefined && args > 0) {
-        args = Math.round(args);
-
-        // Format the input value in Indonesian currency format
-        return args.toLocaleString("id-ID");
+const distanceFormat = (args) => {
+    if (args < 1000) {
+        return `${args} M`;
     }
-    return 0;
+    return `${Math.round(args / 1000)} KM`;
 };
+onMounted(() => {
+    console.log(route().t.url);
+});
 </script>
 
 <template>
@@ -75,7 +87,6 @@ const moneyFormat = (args) => {
                     :address="data.address.address"
                     :name="data.address.name"
                 />
-
                 <div class="p-4 sm:p-8 sm:rounded-lg">
                     <div class="flex items-center space-x-8 mb-5">
                         <div
@@ -107,30 +118,32 @@ const moneyFormat = (args) => {
                     </div>
                     <v-slide-group class="!p-0 !m-0" center-active show-arrows>
                         <v-slide-item
-                            v-for="(product, i) in data.product.cheap_food"
+                            v-for="(product, i) in data.product.free_food"
+                            @click="
+                                openProduct(product.storename, product.title)
+                            "
                             class=""
                         >
                             <v-card class="ma-2" width="300">
+                                <!-- /storage/Media/1/1VmhBcBE8I4khRAhzYKZT2pT3RfLLoJ49gY1nekP.webp -->
                                 <v-img
                                     class="text-white align-end"
                                     height="200"
                                     cover
-                                    src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+                                    :src="`${route().t.url}/storage/${
+                                        product.media?.[0]?.path
+                                    }`"
                                 >
                                 </v-img>
 
                                 <v-card-title class="pt-4">{{
                                     product.title
                                 }}</v-card-title>
-                                <v-card-subtitle class="pt-4"
-                                    >Rp
-                                    {{
-                                        moneyFormat(product.price)
-                                    }}</v-card-subtitle
-                                >
 
                                 <v-card-text class="">
-                                    <div>{{ product.description }}</div>
+                                    <div>
+                                        {{ distanceFormat(product.distance) }}
+                                    </div>
                                     <div
                                         class="text-green-600 items-center flex cursor-pointer"
                                     >
@@ -161,6 +174,9 @@ const moneyFormat = (args) => {
                     <v-slide-group class="!p-0 !m-0" center-active show-arrows>
                         <v-slide-item
                             v-for="(product, i) in data.product.cheap_food"
+                            @click="
+                                openProduct(product.storename, product.title)
+                            "
                             class=""
                         >
                             <v-card class="ma-2" width="300">
@@ -168,22 +184,20 @@ const moneyFormat = (args) => {
                                     class="text-white align-end"
                                     height="200"
                                     cover
-                                    src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+                                    :src="`${route().t.url}/storage/${
+                                        product.media?.[0]?.path
+                                    }`"
                                 >
                                 </v-img>
 
                                 <v-card-title class="pt-4">{{
                                     product.title
                                 }}</v-card-title>
-                                <v-card-subtitle class="pt-4"
-                                    >Rp
-                                    {{
-                                        moneyFormat(product.price)
-                                    }}</v-card-subtitle
-                                >
 
                                 <v-card-text class="">
-                                    <div>{{ product.description }}</div>
+                                    <div>
+                                        {{ distanceFormat(product.distance) }}
+                                    </div>
                                     <div
                                         class="text-green-600 items-center flex cursor-pointer"
                                     >
@@ -213,6 +227,9 @@ const moneyFormat = (args) => {
                     </div>
                     <v-slide-group class="!p-0 !m-0" center-active show-arrows>
                         <v-slide-item
+                            @click="
+                                openProduct(product.storename, product.title)
+                            "
                             v-for="(product, i) in data.product.food_waste"
                             class=""
                         >
@@ -221,22 +238,20 @@ const moneyFormat = (args) => {
                                     class="text-white align-end"
                                     height="200"
                                     cover
-                                    src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+                                    :src="`${route().t.url}/storage/${
+                                        product.media?.[0]?.path
+                                    }`"
                                 >
                                 </v-img>
 
                                 <v-card-title class="pt-4">{{
                                     product.title
                                 }}</v-card-title>
-                                <v-card-subtitle class="pt-4"
-                                    >Rp
-                                    {{
-                                        moneyFormat(product.price)
-                                    }}</v-card-subtitle
-                                >
 
                                 <v-card-text class="">
-                                    <div>{{ product.description }}</div>
+                                    <div>
+                                        {{ distanceFormat(product.distance) }}
+                                    </div>
                                     <div
                                         class="text-green-600 items-center flex cursor-pointer"
                                     >
@@ -277,22 +292,20 @@ const moneyFormat = (args) => {
                                     class="text-white align-end"
                                     height="200"
                                     cover
-                                    src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+                                    :src="`${route().t.url}/storage/${
+                                        product.media?.[0]?.path
+                                    }`"
                                 >
                                 </v-img>
 
                                 <v-card-title class="pt-4">{{
                                     product.title
                                 }}</v-card-title>
-                                <v-card-subtitle class="pt-4"
-                                    >Rp
-                                    {{
-                                        moneyFormat(product.price)
-                                    }}</v-card-subtitle
-                                >
 
                                 <v-card-text class="">
-                                    <div>{{ product.description }}</div>
+                                    <div>
+                                        {{ distanceFormat(product.distance) }}
+                                    </div>
                                     <div
                                         class="text-green-600 items-center flex cursor-pointer"
                                     >
