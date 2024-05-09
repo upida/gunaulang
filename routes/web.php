@@ -33,8 +33,8 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/profile/address', [AddressController::class, 'address'])->name('address'); # customer.2
-    Route::get('/profile/address/create', [AddressController::class, 'create_page'])->name('create'); # customer.3
+    Route::get('/profile/address', [AddressController::class, 'address'])->name('address'); # customer.2 ✅
+    Route::get('/profile/address/create', [AddressController::class, 'create_page'])->name('address.create'); # customer.3✅
     Route::post('/profile/address/create', [AddressController::class, 'create']);
     # Route::get('/profile/address/{id}', [AddressController::class, 'edit'])->name('address.edit');
     
@@ -60,7 +60,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/coin/history', [CoinController::class, 'history'])->name('coin.history'); # seller.10
     Route::get('/coin/history/{id}', [CoinController::class, 'history_detail'])->name('coin.history.detail'); # seller.11
     
-    Route::get('/cart', [CartController::class, 'cart'])->name('cart'); # customer.7
+    Route::get('/cart', [CartController::class, 'cart'])->name('cart'); # customer.7 ✅
     Route::post('/cart/add', [CartController::class, 'add']);
     Route::post('/cart/edit', [CartController::class, 'edit']);
 
@@ -75,8 +75,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::get('/test', [TestController::class, 'csrf']);
 
-Route::get('', [HomeController::class, 'home'])->name('home'); # customer.1 seller.1
-Route::get('/search', [SearchController::class, 'search'])->name('search'); # customer.5
+Route::get('', [HomeController::class, 'home'])->name('home'); # customer.1 seller.1 ✅
+Route::get('/search', [SearchController::class, 'search'])->name('search'); # customer.5 ✅
 
 # Route::get('/{store_name}', [StoreController::class, 'store'])->name('store');
 # Route::get('/{store_name}/search', [StoreController::class, 'search'])->name('search');
