@@ -40,8 +40,23 @@ class HomeController extends Controller
             $today = date('Y-m-d');
 
             // product.free_food
-            $data['product']['free_food'] = Product::select('products.*')
-            ->select('stores.*');
+            $data['product']['free_food'] = Product::select(
+                "products.store_id",
+                "products.title",
+                "products.description",
+                "products.stock",
+                "products.is_new",
+                "products.is_food",
+                "products.is_active",
+                "products.price",
+                "products.expired_at",
+                "products.likes",
+                "stores.storename",
+                "stores.name",
+                "stores.province",
+                "stores.latitude",
+                "stores.longitude"
+            );
 
             if (!empty($data['address']['latitude']) && !empty($data['address']['longitude'])) {
                 $data['product']['free_food'] = $data['product']['free_food']
@@ -91,8 +106,23 @@ class HomeController extends Controller
             $data['product']['free_food'] = $data['product']['free_food']->get()->toArray();
 
             // product.cheap_food
-            $data['product']['cheap_food'] = Product::select('products.*')
-            ->select('stores.*');
+            $data['product']['cheap_food'] = Product::select(
+                "products.store_id",
+                "products.title",
+                "products.description",
+                "products.stock",
+                "products.is_new",
+                "products.is_food",
+                "products.is_active",
+                "products.price",
+                "products.expired_at",
+                "products.likes",
+                "stores.storename",
+                "stores.name",
+                "stores.province",
+                "stores.latitude",
+                "stores.longitude"
+            );
 
             if (!empty($data['address']['latitude']) && !empty($data['address']['longitude'])) {
                 $data['product']['cheap_food'] = $data['product']['cheap_food']
@@ -142,8 +172,23 @@ class HomeController extends Controller
             $data['product']['cheap_food'] = $data['product']['cheap_food']->get()->toArray();
             
             // product.food_waste
-            $data['product']['food_waste'] = Product::select('products.*')
-            ->select('stores.*');
+            $data['product']['food_waste'] = Product::select(
+                "products.store_id",
+                "products.title",
+                "products.description",
+                "products.stock",
+                "products.is_new",
+                "products.is_food",
+                "products.is_active",
+                "products.price",
+                "products.expired_at",
+                "products.likes",
+                "stores.storename",
+                "stores.name",
+                "stores.province",
+                "stores.latitude",
+                "stores.longitude"
+            );
 
             if (!empty($data['address']['latitude']) && !empty($data['address']['longitude'])) {
                 $data['product']['food_waste'] = $data['product']['food_waste']
@@ -194,8 +239,23 @@ class HomeController extends Controller
             $data['product']['food_waste'] = $data['product']['food_waste']->get()->toArray();
             
             // product.processed_waste
-            $data['product']['processed_waste'] = Product::select('products.*')
-            ->select('stores.*');
+            $data['product']['processed_waste'] = Product::select(
+                "products.store_id",
+                "products.title",
+                "products.description",
+                "products.stock",
+                "products.is_new",
+                "products.is_food",
+                "products.is_active",
+                "products.price",
+                "products.expired_at",
+                "products.likes",
+                "stores.storename",
+                "stores.name",
+                "stores.province",
+                "stores.latitude",
+                "stores.longitude"
+            );
 
             if (!empty($data['address']['latitude']) && !empty($data['address']['longitude'])) {
                 $data['product']['processed_waste'] = $data['product']['processed_waste']
