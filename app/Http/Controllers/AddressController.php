@@ -68,6 +68,10 @@ class AddressController extends Controller
                 'phone.regex' => 'The phone field format starts with 0. The length is 9 to 13 characters.'
             ]);
 
+            if ($request->get('is_active')) {
+                UserAddress::where('user_id', '=', $user->id)->where('is_active', '=', 1)->update(['is_active' => 0]);
+            }
+
             UserAddress::create([
                 'user_id' => $user->id,
                 'is_active' => $request->get('is_active'),
@@ -97,6 +101,13 @@ class AddressController extends Controller
             ->first();
     
             if (!$address) throw new WebException("Address not found", 404);
+
+            if ($request->get('is_active')) {
+                UserAddress::where('user_id', $request->user()->id)->where('id', '<>', $id)->where('is_active', '=', 1)->update(['is_active' => 0]);
+            }
+
+            $address->is_active = $request->get('is_active');
+            $address->save();
             
             return Inertia::render('Address/Edit', [
                 'canLogin' => Route::has('login'),
