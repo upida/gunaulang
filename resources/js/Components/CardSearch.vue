@@ -3,20 +3,13 @@ import { computed, ref } from "vue";
 import TextInput from "@/Components/TextInput.vue";
 import { onMounted } from "vue";
 
-const emit = defineEmits(["search"]);
+const emit = defineEmits(["search", "update:modelValue"]);
 
 const props = defineProps({
     modelValue: String,
 });
-const query = computed({
-    get() {
-        return props.modelValue;
-    },
 
-    set(val) {
-        emit('update:modelValue', val);
-    },
-});
+onMounted(() => {});
 </script>
 <template>
     <div class="p-5 sm:rounded-lg bg-white shadow">
@@ -26,9 +19,10 @@ const query = computed({
             class="w-full"
             placeholder="Cari"
             autofocus
+            :value="props.modelValue"
+            @input="(e) => emit('update:modelValue', e.target.value)"
             autocomplete="name"
-            v-model="query"
-            @keyup.enter="emit('search', query)"
+            @keyup.enter="(e) => emit('search', e.target.value)"
         />
     </div>
 </template>

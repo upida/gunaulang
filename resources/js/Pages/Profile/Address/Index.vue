@@ -45,9 +45,7 @@ const submit = () => {
 
     <BasicLayout :canLogin="canLogin" :canRegister="canRegister">
         <div class="py-12">
-            <div
-                class="max-w-7xl mx-auto sm:px-6 lg:px-8 flex flex-col space-y-6"
-            >
+            <div class="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col space-y-6">
                 <h1 v-if="data.active" class="font-bold text-lg text-uppercase">
                     Alamat Utama
                 </h1>

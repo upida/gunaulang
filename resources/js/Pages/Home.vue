@@ -19,6 +19,7 @@ defineProps({
         type: Object,
     },
 });
+const query = ref("");
 const doSearch = (params) => {
     router.get("/search", params);
 };
@@ -88,7 +89,9 @@ onMounted(() => {
                     :name="data.address.name"
                 />
                 <div class="p-4 sm:p-8 sm:rounded-lg">
-                    <div class="flex items-center space-x-8 mb-5">
+                    <div
+                        class="grid sm:grid-cols-4 grid-cols-2 gap-8 items-center sm:mb-5 mb-20"
+                    >
                         <div
                             v-for="cat in categories"
                             @click="cat.action"
@@ -102,14 +105,26 @@ onMounted(() => {
                         </div>
                     </div>
                 </div>
-                <CardSearch @search="doSearch" class="mx-20" />
+                <CardSearch
+                    v-model="query"
+                    @search="(val) => doSearch({ keyword: val })"
+                    class="sm:mx-20 mx-5"
+                />
                 <div v-if="data.product.free_food.length > 0" class="pa-4">
                     <div class="flex justify-between items-center">
                         <h1 class="font-bold text-lg text-uppercase">
                             Makanan Gratis
                         </h1>
                         <p
-                            @click="doSearch({ is_new: 1, is_food: 1 })"
+                            @click="
+                                doSearch({
+                                    is_new: 1,
+                                    is_food: 1,
+                                    price_start: 0,
+                                    price_end: 0,
+                                    expired_at_start: new Date(),
+                                })
+                            "
                             class="text-green-600 items-center cursor-pointer"
                         >
                             Lihat Semua
@@ -164,7 +179,14 @@ onMounted(() => {
                             Makanan Murah
                         </h1>
                         <p
-                            @click="doSearch({ is_new: 1, is_food: 1 })"
+                            @click="
+                                doSearch({
+                                    is_new: 1,
+                                    is_food: 1,
+                                    price_start: 1,
+                                    expired_at_start: new Date(),
+                                })
+                            "
                             class="text-green-600 items-center cursor-pointer"
                         >
                             Lihat Semua
@@ -218,7 +240,12 @@ onMounted(() => {
                             Limbah Makanan
                         </h1>
                         <p
-                            @click="doSearch({ is_new: 1, is_food: 1 })"
+                            @click="
+                                doSearch({
+                                    is_food: 1,
+                                    expired_at_end: new Date(),
+                                })
+                            "
                             class="text-green-600 items-center cursor-pointer"
                         >
                             Lihat Semua
@@ -272,10 +299,10 @@ onMounted(() => {
                 >
                     <div class="flex justify-between items-center">
                         <h1 class="font-bold text-lg text-uppercase">
-                            Produk Olahan Limbah
+                            Produk Olahan Limbah Makanan
                         </h1>
                         <p
-                            @click="doSearch({ is_new: 1, is_food: 1 })"
+                            @click="doSearch({ is_new: 1, is_food: 0 })"
                             class="text-green-600 items-center cursor-pointer"
                         >
                             Lihat Semua

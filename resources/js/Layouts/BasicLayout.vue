@@ -313,6 +313,12 @@ defineProps({
                                 Profile
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
+                                :href="route('cart')"
+                                :active="route().current('cart')"
+                            >
+                                Keranjang
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink
                                 :href="route('logout')"
                                 method="post"
                                 as="button"
