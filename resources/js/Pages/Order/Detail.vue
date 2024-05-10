@@ -86,7 +86,6 @@ onMounted(() => {});
     <BasicLayout :canLogin="canLogin" :canRegister="canRegister">
         <div class="py-12">
             <div class="max-w-7xl mx-auto px-6 lg:px-8 space-y-5">
-                {{data.payment}}
                 <div class="flex items-center space-x-2">
                     <h1 class="font-bold text-lg text-uppercase">
                         Detail Transaksi 
