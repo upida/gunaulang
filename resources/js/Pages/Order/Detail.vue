@@ -120,9 +120,6 @@ onMounted(() => {});
                             {{ data.order.store_name }}
                         </p>
                         <p>
-                            {{ data.order.status }}
-                        </p>
-                        <p>
                             Rp {{ moneyFormat(data.order.total) }}
                         </p>
                         <PrimaryButton
