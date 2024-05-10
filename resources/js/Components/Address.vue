@@ -14,6 +14,10 @@ const props = defineProps({
     address: {
         type: String,
     },
+    showIcon: {
+        type: Boolean,
+        default: true,
+    },
 });
 </script>
 <template>
@@ -26,12 +30,16 @@ const props = defineProps({
                         <p v-if="props.name">
                             {{ props.name }}
                         </p>
-                        <small v-if="props.address" class="text-sm text-gray-500">
+                        <small
+                            v-if="props.address"
+                            class="text-sm text-gray-500"
+                        >
                             {{ props.address }}
                         </small>
                     </div>
                 </div>
                 <v-icon
+                    v-if="props.showIcon"
                     @click="emit('edit')"
                     icon="mdi-pencil"
                     class="cursor-pointer text-orange-500"
