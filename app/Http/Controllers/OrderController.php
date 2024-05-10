@@ -37,7 +37,7 @@ class OrderController extends Controller
             ])
             ->first();
             
-            if (!$address) Redirect::to('/address');
+            if (!$address) Redirect::to('/profile/address');
 
             $mystore = Store::where('user_id', '=', $user->id)->first();
 
@@ -270,8 +270,8 @@ class OrderController extends Controller
                 'stores.storename',
                 'stores.name',
             ])
-            ->join('stores', 'stores.id', '=', 'orders.id')
-            ->whereIn('orders.id', $orders)
+            ->join('stores', 'stores.id', '=', 'orders.store_id')
+            ->whereIn('orders.id', array_values($orders))
             ->where('orders.user_id', '=', $user->id)
             ->get()
             ->toArray();

@@ -36,7 +36,7 @@ class HomeController extends Controller
                 ->first();
             }
 
-            if (!$data['address']) return Redirect::to('/profile/address');
+            if ($user && !$data['address']) return Redirect::to('/profile/address');
 
             $today = date('Y-m-d');
 
