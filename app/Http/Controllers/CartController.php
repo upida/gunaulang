@@ -20,6 +20,7 @@ class CartController extends Controller
             $user = $request->user();
 
             $data = Cart::select(
+                'stores.id as store_id',
                 'stores.name as storename',
                 'stores.name as store_name',
                 'cart_products.quantity as quantity',
@@ -41,6 +42,7 @@ class CartController extends Controller
                 if (!isset($carts[$cart['storename']])) {
                     $carts[$cart['storename']] = [
                         'store' => [
+                            'id' => $cart['store_id'],
                             'storename' => $cart['storename'],
                             'store_name' => $cart['store_name'],
                         ],
