@@ -20,11 +20,12 @@ class CartController extends Controller
             $user = $request->user();
 
             $data = Cart::select(
+                'carts.id as id',
                 'stores.id as store_id',
                 'stores.name as storename',
                 'stores.name as store_name',
                 'cart_products.quantity as quantity',
-                'products.id as id',
+                'products.id as product_id',
                 'products.title as title',
                 'products.stock as stock',
                 'products.price as price'
@@ -41,6 +42,9 @@ class CartController extends Controller
             foreach($data as $cart) {
                 if (!isset($carts[$cart['storename']])) {
                     $carts[$cart['storename']] = [
+                        'cart' => [
+                            'id' => $cart['id']
+                        ],
                         'store' => [
                             'id' => $cart['store_id'],
                             'storename' => $cart['storename'],
@@ -51,7 +55,7 @@ class CartController extends Controller
                 }
 
                 $carts[$cart['storename']]['product'][] = [
-                    'id' => $cart['id'],
+                    'id' => $cart['product_id'],
                     'title' => $cart['title'],
                     'stock' => $cart['stock'],
                     'price' => $cart['price'],
@@ -116,7 +120,9 @@ class CartController extends Controller
             $id = $request->get('id');
             $quantity = $request->get('quantity');
 
-            $cart_product = CartProduct::where('id', '=', $id)->first();
+            $cart_product = CartProduct::where('user_id', '=', $user->id)
+            ->where('product_id', '=', $id)
+            ->first();
             if (!$cart_product) throw new ApiException('Product not found in your cart', 404);
 
             $cart = Cart::where('id', $cart_product->cart_id)->where('user_id', '=', $user->id)->first();
