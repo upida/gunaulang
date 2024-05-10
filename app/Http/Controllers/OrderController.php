@@ -106,6 +106,7 @@ class OrderController extends Controller
             $user = $request->user();
 
             $orders = Order::select(
+                "orders.id",
                 "orders.total",
                 "orders.status",
                 "stores.storename",
@@ -113,26 +114,27 @@ class OrderController extends Controller
                 "stores.province as store_province",
                 "stores.latitude as store_latitude",
                 "stores.longitude as store_longitude",
-                "order_address.name as order_name",
-                "order_address.phone as order_phone",
-                "order_address.address as order_address",
-                "order_address.subdistrict as order_subdistrict",
-                "order_address.district as order_district",
-                "order_address.city as order_city",
-                "order_address.province as order_province",
-                "order_address.latitude as order_latitude",
-                "order_address.longitude as order_longitude",
-                "order_address.gmaps_point as order_gmaps_point",
-                "order_address.notes as order_notes",
+                "order_addresses.name as order_name",
+                "order_addresses.phone as order_phone",
+                "order_addresses.address as order_address",
+                "order_addresses.subdistrict as order_subdistrict",
+                "order_addresses.district as order_district",
+                "order_addresses.city as order_city",
+                "order_addresses.province as order_province",
+                "order_addresses.latitude as order_latitude",
+                "order_addresses.longitude as order_longitude",
+                "order_addresses.gmaps_point as order_gmaps_point",
+                "order_addresses.notes as order_notes",
             )
-            ->join('order_address', 'order_address.order_id', '=', 'orders.id')
-            ->join('store', 'store.id', '=', 'orders.store_id')
+            ->selectRaw("DATE_FORMAT(orders.created_at, '%Y-%m-%d') as created")
+            ->join('order_addresses', 'order_addresses.order_id', '=', 'orders.id')
+            ->join('stores', 'stores.id', '=', 'orders.store_id')
             ->where('orders.user_id', '=', $user->id)
             ->orderBy('orders.id', 'desc')
             ->get()
             ->toArray();
 
-            return Inertia::render('Order/List/Index', [
+            return Inertia::render('Order/List', [
                 'canLogin' => Route::has('login'),
                 'canRegister' => Route::has('register'),
                 'data' => [
@@ -318,6 +320,8 @@ class OrderController extends Controller
 
             $payment = OrderPayment::where('order_id', '=', $order->id)->first();
 
+            $order['created'] = date('Y-m-d', strtotime($order['created_at']));
+
             return Inertia::render('Order/Detail', [
                 'canLogin' => Route::has('login'),
                 'canRegister' => Route::has('register'),
@@ -343,14 +347,14 @@ class OrderController extends Controller
             $order = Order::where('id', '=', (int) $id)->where('user_id', '=', $user->id)->first();
             if (!$order) throw new WebException('Order not found', 404);
             
-            $store = Store::where('store_id', '=', $order->store_id)->first();
+            $store = Store::where('id', '=', $order->store_id)->first();
             if (!$store) throw new WebException('Store not found', 404);
 
             $order->status = $status;
             $order->save();
 
             if ($status == 'completed') {
-                $coin = Coin::where('store_id', '=', $store->id)->first();
+                $coin = Coin::where('user_id', '=', $store->user_id)->first();
                 if (!$coin) $coin = Coin::create([
                     'user_id' => $store->user_id,
                     'balance' => $order->total
