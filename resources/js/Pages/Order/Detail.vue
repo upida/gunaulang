@@ -42,35 +42,7 @@ const toast = reactive({
     checkout: false,
 });
 
-const payNow = () => {
-    console.log(usePage().props.data);
-    const payload = {
-        products: usePage().props.data.products.map((pr) => {
-            return {
-                store: {
-                    id: pr.store.id,
-                },
-                total: pr.total,
-                products: pr.products.map((item) => {
-                    return {
-                        id: item.id,
-                        title: item.title,
-                        quantity: item.quantity,
-                        price: item.price,
-                    };
-                }),
-            };
-        }),
-        address: usePage().props.data.address,
-        donate: donate.value,
-    };
-    axios
-        .post(`${route().t.url}/order/add`, payload)
-        .then(function (response) {
-            toast.checkout = true;
-        })
-        .catch(function (error) {});
-};
+const payNow = () => {};
 
 const donate = ref(null);
 const moneyFormat = (args) => {
@@ -88,6 +60,7 @@ onMounted(() => {});
 
 <template>
     <Head title="Setiap Bagian Berharga" />
+    {{ data }}
     <BasicLayout :canLogin="canLogin" :canRegister="canRegister">
         <div class="py-12">
             <div class="max-w-7xl mx-auto px-6 lg:px-8 space-y-5">

@@ -64,12 +64,7 @@ const payNow = () => {
         address: usePage().props.data.address,
         donate: donate.value,
     };
-    axios
-        .post(`${route().t.url}/order/add`, payload)
-        .then(function (response) {
-            toast.checkout = true;
-        })
-        .catch(function (error) {});
+    router.post("/order/add", payload);
 };
 
 const donate = ref(null);

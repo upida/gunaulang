@@ -330,37 +330,6 @@ onMounted(() => {
             </div>
         </div>
     </BasicLayout>
-    <BasicLayout :canLogin="canLogin" :canRegister="canRegister">
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto px-6 lg:px-8">
-                <h1 class="font-bold text-lg mb-5 text-uppercase">
-                    Alamat Pengiriman
-                </h1>
-                <h1 class="font-bold text-lg mb-5 text-uppercase">
-                    Informasi Toko
-                </h1>
-                <Address />
-                <div class="space-y-6">
-                    <div
-                        class="px-4 py-3 sm:p-8 bg-white shadow sm:rounded-lg flex justify-end space-x-2"
-                    >
-                        <div class="text-end">
-                            <p class="font-semibold text-lg">Total</p>
-                            <p class="">Rp {{ moneyFormat(sumTotal) }}</p>
-                        </div>
-                        <PrimaryButton
-                            @click="checkout"
-                            class="ms-4 text-center justify-center flex"
-                            :class="{ 'opacity-25': form.processing }"
-                            :disabled="selectedProduct == 0"
-                        >
-                            Pesan sekarang ({{ selectedProduct }})
-                        </PrimaryButton>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </BasicLayout>
     <v-snackbar v-model="toast.edit">
         Berhasil mengubah jumlah
         <template v-slot:actions>

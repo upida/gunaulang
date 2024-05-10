@@ -43,33 +43,10 @@ const toast = reactive({
 });
 
 const payNow = () => {
-    console.log(usePage().props.data);
     const payload = {
-        products: usePage().props.data.products.map((pr) => {
-            return {
-                store: {
-                    id: pr.store.id,
-                },
-                total: pr.total,
-                products: pr.products.map((item) => {
-                    return {
-                        id: item.id,
-                        title: item.title,
-                        quantity: item.quantity,
-                        price: item.price,
-                    };
-                }),
-            };
-        }),
-        address: usePage().props.data.address,
-        donate: donate.value,
+        orders: usePage().props.data.order,
     };
-    axios
-        .post(`${route().t.url}/order/add`, payload)
-        .then(function (response) {
-            toast.checkout = true;
-        })
-        .catch(function (error) {});
+    router.get("/order/payment/callback", payload);
 };
 
 const donate = ref(null);
