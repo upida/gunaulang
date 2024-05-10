@@ -59,22 +59,22 @@ class OrderController extends Controller
                 if ($check_product['stock'] < $products[$product_key]['quantity']) throw new WebException('There are product stock that is less than quantity', 400);
                 
                 $store_key = array_search($check_product['store_id'], array_column($check_stores, 'id'));
-                if (is_numeric($store_key) && !isset($data_products[$check_product->store_id])) {
-                    $data_products[$check_product->store_id]['store'] = $check_stores[$store_key];
-                    $data_products[$check_product->store_id]['total']['products'] = 0;
-                    $data_products[$check_product->store_id]['total']['all'] = 0;
+                if (is_numeric($store_key) && !isset($data_products[$check_product['store_id']])) {
+                    $data_products[$check_product['store_id']]['store'] = $check_stores[$store_key];
+                    $data_products[$check_product['store_id']]['total']['products'] = 0;
+                    $data_products[$check_product['store_id']]['total']['all'] = 0;
                 }
                 else if (!is_numeric($store_key)) throw new WebException('There are stores that were not found', 404);
                 
-                $data_products[$check_product->store_id]['products'][] = array_merge(
+                $data_products[$check_product['store_id']]['products'][] = array_merge(
                     $check_product,
                     [
                         'quantity' => $products[$product_key]['quantity'],
                     ]
                 );
 
-                $data_products[$check_product->store_id]['total']['products'] += ($check_product['price'] * $products[$product_key]['quantity']);
-                $data_products[$check_product->store_id]['total']['all'] = $data_products[$check_product->store_id]['total']['products'];
+                $data_products[$check_product['store_id']]['total']['products'] += ($check_product['price'] * $products[$product_key]['quantity']);
+                $data_products[$check_product['store_id']]['total']['all'] = $data_products[$check_product['store_id']]['total']['products'];
             }
 
             $total = [
