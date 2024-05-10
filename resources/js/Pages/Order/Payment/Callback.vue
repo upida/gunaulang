@@ -42,37 +42,6 @@ const toast = reactive({
     checkout: false,
 });
 
-const payNow = () => {
-    console.log(usePage().props.data);
-    const payload = {
-        products: usePage().props.data.products.map((pr) => {
-            return {
-                store: {
-                    id: pr.store.id,
-                },
-                total: pr.total,
-                products: pr.products.map((item) => {
-                    return {
-                        id: item.id,
-                        title: item.title,
-                        quantity: item.quantity,
-                        price: item.price,
-                    };
-                }),
-            };
-        }),
-        address: usePage().props.data.address,
-        donate: donate.value,
-    };
-    axios
-        .post(`${route().t.url}/order/add`, payload)
-        .then(function (response) {
-            toast.checkout = true;
-        })
-        .catch(function (error) {});
-};
-
-const donate = ref(null);
 const moneyFormat = (args) => {
     if (args !== null && args !== undefined && args > 0) {
         args = Math.round(args);
@@ -82,15 +51,25 @@ const moneyFormat = (args) => {
     }
     return 0;
 };
-
-onMounted(() => {});
+const sumTotal = computed(() => {
+    let totalSum = 0;
+    for (const order of usePage().props.data.order) {
+        totalSum += order.total;
+    }
+    return totalSum;
+});
+const openDetail = (id) => {
+    router.get(`/order/${id}`);
+};
+onMounted(() => {
+    console.log(usePage());
+});
 </script>
 
 <template>
     <Head title="Setiap Bagian Berharga" />
     <BasicLayout :canLogin="canLogin" :canRegister="canRegister">
         <div class="py-12">
-            {{ data }}
             <div class="max-w-7xl mx-auto px-6 lg:px-8 space-y-5">
                 <h1 class="font-bold text-lg text-uppercase">
                     Status Pembayaran
@@ -108,15 +87,17 @@ onMounted(() => {});
                     </div>
                     <p class="text-gray-400">
                         Anda telah berhasil melakukan pembayaran sejumlah Rp
-                        {{ moneyFormat(0) }}
+                        {{ moneyFormat(sumTotal) }}
                     </p>
                     <div
-                        v-for="i in 2"
+                        v-for="order in data.order"
                         class="rounded-md p-5 border flex justify-between w-full"
                     >
-                        <p></p>
+                        <p>
+                            {{ order.name }} - Rp {{ moneyFormat(order.total) }}
+                        </p>
                         <PrimaryButton
-                            @click="detail()"
+                            @click="openDetail(order.id)"
                             class="ms-4 text-center justify-center flex"
                             :class="{ 'opacity-25': form.processing }"
                             :disabled="selectedProduct == 0"
