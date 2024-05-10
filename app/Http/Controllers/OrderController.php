@@ -262,6 +262,7 @@ class OrderController extends Controller
             $orders = $request->get('orders');
 
             $orders = Order::select([
+                'orders.id',
                 'orders.user_id',
                 'orders.store_id',
                 'orders.total',
