@@ -165,8 +165,9 @@ onMounted(() => {
                     <CardProduct
                         v-for="product in data.product"
                         :name="product.title"
-                        :image="product.title"
-                        :description="product.description"
+                        :image="product.media"
+                        :distance="product.distance"
+                        :store_name="product.name"
                     />
                 </div>
             </div>

@@ -48,14 +48,41 @@ const submit = () => {
             <div
                 class="max-w-7xl mx-auto sm:px-6 lg:px-8 flex flex-col space-y-6"
             >
-                <h1 class="font-bold text-lg text-uppercase">Alamat Utama</h1>
+                <h1 v-if="data.active" class="font-bold text-lg text-uppercase">
+                    Alamat Utama
+                </h1>
                 <Address
+                    v-if="data.active"
                     :address="data.active.address"
                     :name="data.active.name"
                 />
-                <h1 class="font-bold text-lg mt-14 text-uppercase">
+                <h1
+                    v-if="
+                        data.address &&
+                        data.address.filter((addr) => addr.id != data.active.id)
+                            .length > 0
+                    "
+                    class="font-bold text-lg mt-14 text-uppercase"
+                >
                     Alamat Lainnya
                 </h1>
+                <div
+                    v-if="!data.active && data.address.length == 0"
+                    class="p-4 sm:p-8 bg-white shadow sm:rounded-lg flex flex-col space-y-5 justify-center items-center"
+                >
+                    <div
+                        class="border-4 border-gray-500 p-2 rounded-full w-14 h-14 flex justify-center items-center"
+                    >
+                        <v-icon
+                            icon="mdi-exclamation"
+                            class="text-gray-500"
+                        ></v-icon>
+                    </div>
+                    <p class="text-gray-400">
+                        Anda belum memiliki alamat, harap tambah alamat untuk
+                        melakukan transaksi
+                    </p>
+                </div>
                 <Address
                     v-for="address in data.address.filter(
                         (addr) => addr.id != data.active.id
