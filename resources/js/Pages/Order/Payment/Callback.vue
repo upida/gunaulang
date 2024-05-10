@@ -68,7 +68,6 @@ onMounted(() => {
 
 <template>
     <Head title="Setiap Bagian Berharga" />
-    {{ data }}
     <BasicLayout :canLogin="canLogin" :canRegister="canRegister">
         <div class="py-12">
             <div class="max-w-7xl mx-auto px-6 lg:px-8 space-y-5">
