@@ -2,8 +2,8 @@
 
 ## Nama Anggota
 
-### Mufida Salma (Ketua)
-### Rahma Azzahra (Anggota)
+- Mufida Salma (Ketua)
+- Rahma Azzahra (Anggota)
 
 ## Brief Explanation
 
