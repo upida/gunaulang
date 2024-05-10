@@ -21,7 +21,7 @@ onMounted(() => {});
             autofocus
             :value="props.modelValue"
             @input="(e) => emit('update:modelValue', e.target.value)"
-            autocomplete="name"
+            autocomplete="off"
             @keyup.enter="(e) => emit('search', e.target.value)"
         />
     </div>
