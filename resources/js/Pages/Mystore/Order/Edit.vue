@@ -1,11 +1,16 @@
 <script setup>
-import { Head, Link, useForm, router } from "@inertiajs/vue3";
+import { Head, Link, useForm, router, usePage } from "@inertiajs/vue3";
+import { computed } from "vue";
 import BasicLayout from "@/Layouts/BasicLayout.vue";
 import TextInput from "@/Components/TextInput.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import Toggle from "@/Components/Toggle.vue";
+import Address from "@/Components/Address.vue";
+import { onMounted, reactive, ref } from "vue";
+import axios from "axios";
+
 defineProps({
     canLogin: {
         type: Boolean,
@@ -32,237 +37,120 @@ const form = useForm({
     gmaps_point: "",
     notes: "",
 });
+const toast = reactive({
+    edit: false,
+    checkout: false,
+});
 
-const submit = () => {
-    router.post("/profile/address/create", form);
-    form.reset();
-    // form.post(route("/profile/address/create"), {
-    //     onFinish: () => ,
-    // });
+const payNow = () => {};
+
+const donate = ref(null);
+const moneyFormat = (args) => {
+    if (args !== null && args !== undefined && args > 0) {
+        args = Math.round(args);
+
+        // Format the input value in Indonesian currency format
+        return args.toLocaleString("id-ID");
+    }
+    return 0;
 };
+
+onMounted(() => {});
 </script>
 
 <template>
     <Head title="Setiap Bagian Berharga" />
-
     <BasicLayout :canLogin="canLogin" :canRegister="canRegister">
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                    <div>
-                        <form
-                            @submit.prevent="submit"
-                            class="grid grid-cols-2 gap-6"
-                        >
-                            <div>
-                                <InputLabel for="name" value="Nama Alamat" />
-                                <TextInput
-                                    id="name"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    v-model="form.name"
-                                    required
-                                    autofocus
-                                    autocomplete="name"
-                                />
+            <div class="max-w-7xl mx-auto px-6 lg:px-8 space-y-5">
+                <h1 class="font-bold text-lg text-uppercase">
+                    Detail Transaksi
+                </h1>
 
-                                <InputError
-                                    class="mt-2"
-                                    :message="form.errors.name"
-                                />
-                            </div>
-                            <div>
-                                <InputLabel for="address" value="Alamat" />
-                                <TextInput
-                                    id="address"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    v-model="form.address"
-                                    required
-                                    autofocus
-                                    autocomplete="address"
-                                />
+                <h2 class="font-semibold text-md">Lokasi Penerima</h2>
+                <Address
+                    :address="data.address.address"
+                    :name="data.address.name"
+                    :show-icon="false"
+                />
 
-                                <InputError
-                                    class="mt-2"
-                                    :message="form.errors.address"
-                                />
-                            </div>
-                            <div>
-                                <InputLabel
-                                    for="subdistrict"
-                                    value="Kecamatan"
-                                />
-                                <TextInput
-                                    id="subdistrict"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    v-model="form.subdistrict"
-                                    required
-                                    autofocus
-                                    autocomplete="subdistrict"
-                                />
+                <h2 class="font-semibold text-md">Detail Pesanan</h2>
 
-                                <InputError
-                                    class="mt-2"
-                                    :message="form.errors.subdistrict"
-                                />
-                            </div>
-                            <div>
-                                <InputLabel for="district" value="Kabupaten" />
-                                <TextInput
-                                    id="district"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    v-model="form.district"
-                                    required
-                                    autofocus
-                                    autocomplete="district"
-                                />
+                <div class="space-y-6">
+                    <v-card class="w-full py-2">
+                        <v-card-item>
+                            <v-card-title>
+                                <div
+                                    class="w-full justify-between flex items-center"
+                                >
+                                    <p>
+                                        {{ data.customer.name }}
+                                    </p>
+                                    <p class="text-sm">
+                                        {{ data.customer.province }}
+                                    </p>
+                                </div>
+                            </v-card-title>
+                        </v-card-item>
+                        <v-divider></v-divider>
+                        <v-card-text>
+                            <v-list lines="two">
+                                <v-list-item
+                                    v-for="item in data.products"
+                                    rounded="0"
+                                    class="items-center"
+                                >
+                                    <template v-slot:title>
+                                        <div
+                                            class="flex sm:flex-row flex-col items-center sm:justify-between"
+                                        >
+                                            <div class="flex items-center">
+                                                <p class="ml-4">
+                                                    {{ item.product_title }}
+                                                </p>
+                                            </div>
+                                            <div
+                                                class="flex items-center space-x-5"
+                                            >
+                                                <p>
+                                                    Rp
+                                                    {{
+                                                        moneyFormat(item.price)
+                                                    }}
+                                                </p>
+                                                <p>x {{ item.quantity }}</p>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </v-list-item>
 
-                                <InputError
-                                    class="mt-2"
-                                    :message="form.errors.district"
-                                />
-                            </div>
-                            <div>
-                                <InputLabel for="city" value="Kota" />
-                                <TextInput
-                                    id="city"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    v-model="form.city"
-                                    required
-                                    autofocus
-                                    autocomplete="city"
-                                />
-
-                                <InputError
-                                    class="mt-2"
-                                    :message="form.errors.city"
-                                />
-                            </div>
-                            <div>
-                                <InputLabel for="province" value="Provinsi" />
-                                <TextInput
-                                    id="province"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    v-model="form.province"
-                                    required
-                                    autofocus
-                                    autocomplete="province"
-                                />
-
-                                <InputError
-                                    class="mt-2"
-                                    :message="form.errors.province"
-                                />
-                            </div>
-                            <div>
-                                <InputLabel for="latitude" value="Latitude" />
-                                <TextInput
-                                    id="latitude"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    v-model="form.latitude"
-                                    autofocus
-                                    autocomplete="latitude"
-                                />
-
-                                <InputError
-                                    class="mt-2"
-                                    :message="form.errors.latitude"
-                                />
-                            </div>
-                            <div>
-                                <InputLabel for="longitude" value="Longitude" />
-                                <TextInput
-                                    id="longitude"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    v-model="form.longitude"
-                                    autofocus
-                                    autocomplete="longitude"
-                                />
-
-                                <InputError
-                                    class="mt-2"
-                                    :message="form.errors.longitude"
-                                />
-                            </div>
-                            <div>
-                                <InputLabel
-                                    for="gmaps_point"
-                                    value="Titik Gmaps"
-                                />
-                                <TextInput
-                                    id="gmaps_point"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    v-model="form.gmaps_point"
-                                    autofocus
-                                    autocomplete="gmaps_point"
-                                />
-
-                                <InputError
-                                    class="mt-2"
-                                    :message="form.errors.gmaps_point"
-                                />
-                            </div>
-                            <div class="mt-4">
-                                <InputLabel
-                                    for="phone"
-                                    value="Phone"
-                                    required
-                                />
-
-                                <TextInput
-                                    id="phone"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    v-model="form.phone"
-                                    required
-                                    autocomplete="phone"
-                                />
-
-                                <InputError
-                                    class="mt-2"
-                                    :message="form.errors.phone"
-                                />
-                            </div>
-                            <div>
-                                <InputLabel for="notes" value="Keterangan" />
-                                <TextInput
-                                    id="notes"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    v-model="form.notes"
-                                    autofocus
-                                    autocomplete="notes"
-                                />
-
-                                <InputError
-                                    class="mt-2"
-                                    :message="form.errors.notes"
-                                />
-                            </div>
-                            <div></div>
-                            <Toggle
-                                v-model:checked="form.is_active"
-                                label="Jadikan sebagai alamat utama"
-                            />
-                            <PrimaryButton
-                                class="ms-4 col-span-2 text-center justify-center flex"
-                                :class="{ 'opacity-25': form.processing }"
-                                :disabled="form.processing"
-                            >
-                                Simpan Alamat
-                            </PrimaryButton>
-                        </form>
-                    </div>
+                                <v-divider inset></v-divider>
+                            </v-list>
+                        </v-card-text>
+                        <v-divider></v-divider>
+                        <v-card-actions class="flex justify-end space-x-5 px-8">
+                            <h1 class="font-bold">Total:</h1>
+                            <p>Rp {{ moneyFormat(data.payment.total) }}</p>
+                        </v-card-actions>
+                    </v-card>
                 </div>
             </div>
         </div>
     </BasicLayout>
+    <v-snackbar v-model="toast.edit">
+        Berhasil mengubah jumlah
+        <template v-slot:actions>
+            <v-btn color="pink" variant="text" @click="toast.edit = false">
+                Tutup
+            </v-btn>
+        </template>
+    </v-snackbar>
+    <v-snackbar v-model="toast.checkout">
+        Berhasil checkout
+        <template v-slot:actions>
+            <v-btn color="pink" variant="text" @click="toast.edit = false">
+                Tutup
+            </v-btn>
+        </template>
+    </v-snackbar>
 </template>

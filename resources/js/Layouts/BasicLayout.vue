@@ -123,12 +123,6 @@ defineProps({
                                         >
                                             Pesanan
                                         </DropdownLink>
-                                        <DropdownLink
-                                            :href="route('coin')"
-                                            as="button"
-                                        >
-                                            Koin
-                                        </DropdownLink>
                                     </template>
                                 </Dropdown>
                                 <Dropdown width="48" class="sm:self-center">
@@ -165,6 +159,18 @@ defineProps({
                                         <!-- <DropdownLink :href="route('order.list.page')">
                                             History Order
                                         </DropdownLink> -->
+                                        <DropdownLink
+                                            :href="route('coin')"
+                                            as="button"
+                                        >
+                                            Koin
+                                        </DropdownLink>
+                                        <DropdownLink
+                                            :href="route('order.list')"
+                                            as="button"
+                                        >
+                                            Transaksi
+                                        </DropdownLink>
                                         <DropdownLink
                                             :href="route('logout')"
                                             method="post"

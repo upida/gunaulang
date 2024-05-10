@@ -55,6 +55,13 @@ const moneyFormat = (args) => {
     return 0;
 };
 
+const setPickedUp = (id) => {
+    const payload = {
+        status: 'completed',
+    };
+    router.post(`/order/${id}`, payload);
+};
+
 onMounted(() => {});
 </script>
 
@@ -66,6 +73,34 @@ onMounted(() => {});
                 <h1 class="font-bold text-lg text-uppercase">
                     Detail Transaksi
                 </h1>
+
+                <div
+                    class="p-4 sm:p-8 bg-white shadow sm:rounded-lg flex flex-col space-y-5 justify-center items-center"
+                >
+                    <div
+                        class="rounded-md p-5 border flex justify-between w-full"
+                    >
+                        <p>
+                            {{ data.order.created }}
+                        </p>
+                        <p>
+                            {{ data.order.store_name }}
+                        </p>
+                        <p>
+                            {{ data.order.status }}
+                        </p>
+                        <p>
+                            Rp {{ moneyFormat(data.order.total) }}
+                        </p>
+                        <PrimaryButton
+                            v-if="data.order.status == 'waiting to be picked up'"
+                            @click="setPickedUp(data.order.id)"
+                            class="ms-4 text-center justify-center flex"
+                        >
+                            Sudah diterima
+                        </PrimaryButton>
+                    </div>
+                </div>
 
                 <h2 class="font-semibold text-md">Lokasi Penerima</h2>
                 <Address

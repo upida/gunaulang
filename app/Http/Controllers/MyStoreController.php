@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\WebException;
 use App\Models\Order;
+use App\Models\OrderAddress;
+use App\Models\OrderPayment;
+use App\Models\OrderProduct;
 use App\Models\Product;
 use App\Models\ProductMedia;
 use App\Models\Store;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -162,6 +166,28 @@ class MyStoreController extends Controller
             ->orderBy('is_active', 'desc')
             ->get()
             ->toArray();
+
+            $product_batch = array_chunk($product, 10);
+
+            foreach ($product_batch as $batch_key => $batch) {
+                $batch_id = array_column($batch, 'id');
+                $media = ProductMedia::whereIn('product_id', $batch_id)->get()->toArray();
+
+                $batch = array_reduce($batch, function (array $accumulator, array $element) {
+                    $accumulator[$element['id']] = $element;
+
+                    return $accumulator;
+                }, []);
+
+                foreach ($media as $m) {
+                    if (!isset($batch[$m['product_id']]['media'])) $batch[$m['product_id']]['media'] = [];
+                    $batch[$m['product_id']]['media'][] = $m;
+                }
+
+                $product_batch[$batch_key] = $batch;
+            }
+
+            $product = array_merge(...$product_batch);
 
             return Inertia::render('Mystore/Product/Index', [
                 'canLogin' => Route::has('login'),
@@ -319,14 +345,27 @@ class MyStoreController extends Controller
             $order = Order::where('store_id', '=', $store->id)
             ->where('id', '=', (int) $id)
             ->first();
-
+            
             if (!$order) throw new WebException('Order not found', 404);
+
+            $customer = User::where('id', '=', $order->user_id)->first();
+            if (!$customer) throw new WebException('Customer not found', 404);
+
+            $address = OrderAddress::where('order_id', '=', $order->id)->first();
+            
+            $products = OrderProduct::where('order_id', '=', $order->id)->get()->toArray();
+
+            $payment = OrderPayment::where('order_id', '=', $order->id)->first();
 
             return Inertia::render('Mystore/Order/Edit', [
                 'canLogin' => Route::has('login'),
                 'canRegister' => Route::has('register'),
                 'data' => [
-                    'order' => $order
+                    'order' => $order,
+                    'customer' => $customer,
+                    'address' => $address,
+                    'products' => $products,
+                    'payment' => $payment,
                 ]
             ]);
         } catch (Exception $e) {
