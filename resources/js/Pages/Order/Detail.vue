@@ -60,11 +60,10 @@ onMounted(() => {});
 
 <template>
     <Head title="Setiap Bagian Berharga" />
-    {{ data }}
     <BasicLayout :canLogin="canLogin" :canRegister="canRegister">
         <div class="py-12">
             <div class="max-w-7xl mx-auto px-6 lg:px-8 space-y-5">
-                <h1 class="font-bold text-lg text-uppercase">Pemesanan</h1>
+                <h1 class="font-bold text-lg text-uppercase">Detail Transaksi</h1>
 
                 <h2 class="font-semibold text-md">Lokasi Penerima</h2>
                 <Address
@@ -75,20 +74,17 @@ onMounted(() => {});
                 <h2 class="font-semibold text-md">Detail Pesanan</h2>
 
                 <div class="space-y-6">
-                    <v-card
-                        v-for="product in data.products"
-                        class="w-full py-2"
-                    >
+                    <v-card class="w-full py-2">
                         <v-card-item>
                             <v-card-title>
                                 <div
                                     class="w-full justify-between flex items-center"
                                 >
                                     <p>
-                                        {{ product.store.name }}
+                                        {{ data.store.name }}
                                     </p>
                                     <p class="text-sm">
-                                        {{ product.store.province }}
+                                        {{ data.store.province }}
                                     </p>
                                 </div>
                             </v-card-title>
@@ -97,7 +93,7 @@ onMounted(() => {});
                         <v-card-text>
                             <v-list lines="two">
                                 <v-list-item
-                                    v-for="item in product.products"
+                                    v-for="item in data.products"
                                     rounded="0"
                                     class="items-center"
                                 >
@@ -107,7 +103,7 @@ onMounted(() => {});
                                         >
                                             <div class="flex items-center">
                                                 <p class="ml-4">
-                                                    {{ item.title }}
+                                                    {{ item.product_title }}
                                                 </p>
                                             </div>
                                             <div
@@ -131,43 +127,9 @@ onMounted(() => {});
                         <v-divider></v-divider>
                         <v-card-actions class="flex justify-end space-x-5 px-8">
                             <h1 class="font-bold">Total:</h1>
-                            <p>Rp {{ moneyFormat(product.total.all) }}</p>
+                            <p>Rp {{ moneyFormat(data.payment.total) }}</p>
                         </v-card-actions>
                     </v-card>
-                    <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                        <h2 class="font-semibold text-md">
-                            Merasa Terbantu? Kirim donasi untuk layanan kami
-                        </h2>
-
-                        <TextInput class="w-full" v-model="donate" />
-                    </div>
-                    <h2 class="font-semibold text-md">Detail Pembayaran</h2>
-
-                    <div
-                        class="p-4 sm:p-8 bg-white shadow sm:rounded-lg grid grid-cols-2 gap-2 items-center"
-                    >
-                        <p>Subtotal</p>
-                        <p class="text-right">
-                            Rp {{ moneyFormat(data.total.products) }}
-                        </p>
-                        <p>Donasi</p>
-                        <p class="text-right">Rp {{ moneyFormat(donate) }}</p>
-                        <p class="font-bold">Total</p>
-                        <p class="text-right font-bold">
-                            Rp
-                            {{
-                                moneyFormat(
-                                    Number(data.total.all) + Number(donate)
-                                )
-                            }}
-                        </p>
-                    </div>
-                    <PrimaryButton
-                        @click="payNow"
-                        class="w-full py-3 flex justify-center items-center"
-                    >
-                        Bayar sekarang
-                    </PrimaryButton>
                 </div>
             </div>
         </div>
