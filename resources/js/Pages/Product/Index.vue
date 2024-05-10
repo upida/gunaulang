@@ -52,9 +52,9 @@ const success = ref(false);
 
     <BasicLayout :canLogin="canLogin" :canRegister="canRegister">
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto px-6 lg:px-8">
                 <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                    <section class="flex space-x-5">
+                    <section class="flex sm:flex-row flex-col sm:space-x-5">
                         <div class="w-full">
                             <v-carousel class="" hide-delimiters>
                                 <v-carousel-item
@@ -110,7 +110,7 @@ const success = ref(false);
                                     {{ data.store.province }}
                                 </div>
                                 <div>Alamat: {{ data.store.address }}</div>
-                                <div class="flex justify-end">
+                                <div class="flex justify-end sm:mt-0 mt-5">
                                     <TextInput
                                         id="quantity"
                                         type="number"
@@ -135,7 +135,7 @@ const success = ref(false);
         Dimasukkan ke keranjang
         <template v-slot:actions>
             <v-btn color="pink" variant="text" @click="success = false">
-                Close
+                Tutup
             </v-btn>
         </template>
     </v-snackbar>

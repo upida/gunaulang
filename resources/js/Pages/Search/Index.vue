@@ -58,19 +58,22 @@ let params = reactive({
     keyword: "",
     expired_at_start: null,
     expired_at_end: null,
+    is_new: false,
+    is_food: false,
 });
-const doSearch = () => {
-    params.expired_at_start = dateRange.value[0];
-    params.expired_at_end = dateRange.value[1];
-    params.price_start = priceRange.value[0];
-    params.price_end = priceRange.value[1];
-    router.get("/search", params);
+const is_new = ref(false);
+const is_food = ref(false);
+
+const openProduct = (store, title) => {
+    router.get(`/${store}/${title}`);
 };
 const doFilter = (val = "") => {
     params.expired_at_start = dateRange.value?.[0] ?? undefined;
     params.expired_at_end = dateRange.value?.[1] ?? undefined;
     params.price_start = priceRange.value?.[0] ?? undefined;
     params.price_end = priceRange.value?.[1] ?? undefined;
+    params.is_new = is_new.value;
+    params.is_food = is_food.value;
     params.keyword = val ?? undefined;
     router.get("/search", params);
 };
@@ -79,7 +82,9 @@ const dateRange = ref();
 onMounted(() => {
     params.keyword = route().params.keyword;
     params = { ...params, ...route().params };
-    console.log(params);
+    dateRange.value = [params.expired_at_start, params.expired_at_end];
+    is_new.value = params.is_new === "true";
+    is_food.value = params.is_food === "true";
 });
 </script>
 
@@ -88,11 +93,11 @@ onMounted(() => {
 
     <BasicLayout :canLogin="canLogin" :canRegister="canRegister">
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
+            <div class="max-w-7xl mx-auto px-6 lg:px-8 space-y-8">
                 <div class="flex space-x-5 items-center">
                     <CardSearch
                         v-model="params.keyword"
-                        @search="doFilter"
+                        @search="(val) => doFilter(val)"
                         class="w-full"
                     />
                     <v-dialog max-width="600">
@@ -136,6 +141,18 @@ onMounted(() => {
                                             teleport-center
                                         />
                                     </div>
+                                    <div>
+                                        <Toggle
+                                            v-model:checked="is_new"
+                                            label="Kondisi baru"
+                                        />
+                                    </div>
+                                    <div>
+                                        <Toggle
+                                            v-model:checked="is_food"
+                                            label="Makanan"
+                                        />
+                                    </div>
                                 </v-card-text>
 
                                 <v-card-actions>
@@ -161,10 +178,11 @@ onMounted(() => {
                 <h1 class="font-bold text-lg mb-5 text-uppercase">
                     {{ data.product?.length }} Hasil Pencarian
                 </h1>
-                <div class="grid grid-cols-4 gap-6">
+                <div class="grid sm:grid-cols-4 grid-cols-1 gap-6">
                     <CardProduct
                         v-for="product in data.product"
                         :name="product.title"
+                        @click="openProduct(product.storename, product.title)"
                         :image="product.media"
                         :distance="product.distance"
                         :store_name="product.name"

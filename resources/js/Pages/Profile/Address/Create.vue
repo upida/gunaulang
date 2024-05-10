@@ -47,14 +47,14 @@ const submit = () => {
 
     <BasicLayout :canLogin="canLogin" :canRegister="canRegister">
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto px-6 lg:px-8">
                 <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                     <div>
                         <form
                             @submit.prevent="submit"
                             class="grid grid-cols-2 gap-6"
                         >
-                            <div>
+                            <div class="w-full">
                                 <InputLabel for="name" value="Nama Alamat" />
                                 <TextInput
                                     id="name"
@@ -71,12 +71,12 @@ const submit = () => {
                                     :message="form.errors.name"
                                 />
                             </div>
-                            <div>
+                            <div class="">
                                 <InputLabel for="address" value="Alamat" />
                                 <TextInput
                                     id="address"
                                     type="text"
-                                    class="mt-1 block w-full"
+                                    class="mt-1 w-full"
                                     v-model="form.address"
                                     required
                                     autofocus
@@ -210,7 +210,7 @@ const submit = () => {
                                     :message="form.errors.gmaps_point"
                                 />
                             </div>
-                            <div class="mt-4">
+                            <div class="">
                                 <InputLabel
                                     for="phone"
                                     value="Phone"
@@ -249,6 +249,7 @@ const submit = () => {
                             </div>
                             <div></div>
                             <Toggle
+                                class="col-span-2"
                                 v-model:checked="form.is_active"
                                 label="Jadikan sebagai alamat utama"
                             />

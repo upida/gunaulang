@@ -64,14 +64,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/cart/add', [CartController::class, 'add']);
     Route::post('/cart/edit', [CartController::class, 'edit']);
 
-    Route::post('/order', [OrderController::class, 'order'])->name('order'); # customer.8
+    Route::post('/order', [OrderController::class, 'order'])->name('order'); # customer.8 ✅
     Route::post('/order/add', [OrderController::class, 'add']);
     Route::post('/order/payment', [OrderController::class, 'payment']);
     Route::get('/order', [OrderController::class, 'order_list'])->name('order.list'); # *
     Route::get('/order/{id}', [OrderController::class, 'detail'])->name('order.detail'); # customer.11
     Route::post('/order/{id}', [OrderController::class, 'detail_edit']);
-    Route::get('/payment_gateway_demo', [OrderController::class, 'payment_gateway_demo'])->name('payment_gateway_demo'); # customer.9
-    Route::get('/order/payment/callback', [OrderController::class, 'payment_callback'])->name('order.payment.callback'); # customer.10
+    Route::get('/payment_gateway_demo', [OrderController::class, 'payment_gateway_demo'])->name('payment_gateway_demo'); # customer.9 ✅
+    Route::get('/order/payment/callback', [OrderController::class, 'payment_callback'])->name('order.payment.callback'); # customer.10 ✅
     
 });
 
@@ -85,6 +85,6 @@ Route::get('/search', [SearchController::class, 'search'])->name('search'); # cu
 # Route::get('/{store_name}/category', [StoreController::class, 'category'])->name('store.category');
 # Route::get('/{store_name}/category/{category_name}', [StoreController::class, 'category_product'])->name('store.category.product');
 
-Route::get('/{store_name}/{product_title}', [StoreController::class, 'product'])->name('store.product'); # customer.6
+Route::get('/{store_name}/{product_title}', [StoreController::class, 'product'])->name('store.product'); # customer.6 ✅
 
 # Route::get('/{store_name}/{product_title}/review', [StoreController::class, 'product_review'])->name('store.product');
