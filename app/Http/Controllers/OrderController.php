@@ -261,7 +261,7 @@ class OrderController extends Controller
             $user = $request->user();
             $orders = $request->get('orders');
 
-            $orders = Order::whereIn('order_id', $orders)->where('user_id', '=', $user->id)->get()->toArray();
+            $orders = Order::whereIn('id', $orders)->where('user_id', '=', $user->id)->get()->toArray();
             foreach ($orders as $order) {
                 $payment = OrderPayment::where('order_id', '=', $order['id'])->first();
                 OrderPaymentStatus::create([
