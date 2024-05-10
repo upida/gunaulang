@@ -63,14 +63,14 @@ class HomeController extends Controller
             if (!empty($data['address']['latitude']) && !empty($data['address']['longitude'])) {
                 $data['product']['free_food'] = $data['product']['free_food']
                 ->selectRaw('
-                    (
+                    SUBSTRING((
                         6371 * 1000 * acos(
                             cos(radians(?))
                             * cos(radians(stores.latitude)) 
                             * cos(radians(stores.longitude) - radians(?)) 
                             + sin(radians(?)) * sin(radians(stores.latitude))
                         )
-                    ) AS distance', 
+                    ), 1, 4) AS distance', 
                     [
                         $data['address']['latitude'],
                         $data['address']['longitude'],
@@ -146,14 +146,14 @@ class HomeController extends Controller
             if (!empty($data['address']['latitude']) && !empty($data['address']['longitude'])) {
                 $data['product']['cheap_food'] = $data['product']['cheap_food']
                 ->selectRaw('
-                    (
+                    SUBSTRING((
                         6371 * 1000 * acos(
                             cos(radians(?))
                             * cos(radians(stores.latitude)) 
                             * cos(radians(stores.longitude) - radians(?)) 
                             + sin(radians(?)) * sin(radians(stores.latitude))
                         )
-                    ) AS distance', 
+                    ), 1, 4) AS distance', 
                     [
                         $data['address']['latitude'],
                         $data['address']['longitude'],
@@ -229,14 +229,14 @@ class HomeController extends Controller
             if (!empty($data['address']['latitude']) && !empty($data['address']['longitude'])) {
                 $data['product']['food_waste'] = $data['product']['food_waste']
                 ->selectRaw('
-                    (
+                    SUBSTRING((
                         6371 * 1000 * acos(
                             cos(radians(?))
                             * cos(radians(stores.latitude)) 
                             * cos(radians(stores.longitude) - radians(?)) 
                             + sin(radians(?)) * sin(radians(stores.latitude))
                         )
-                    ) AS distance', 
+                    ), 1, 4) AS distance', 
                     [
                         $data['address']['latitude'],
                         $data['address']['longitude'],
@@ -314,14 +314,14 @@ class HomeController extends Controller
             if (!empty($data['address']['latitude']) && !empty($data['address']['longitude'])) {
                 $data['product']['processed_waste'] = $data['product']['processed_waste']
                 ->selectRaw('
-                    (
+                    SUBSTRING((
                         6371 * 1000 * acos(
                             cos(radians(?))
                             * cos(radians(stores.latitude)) 
                             * cos(radians(stores.longitude) - radians(?)) 
                             + sin(radians(?)) * sin(radians(stores.latitude))
                         )
-                    ) AS distance', 
+                    ), 1, 4) AS distance', 
                     [
                         $data['address']['latitude'],
                         $data['address']['longitude'],

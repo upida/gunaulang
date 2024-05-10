@@ -59,14 +59,14 @@ class SearchController extends Controller
             if ($user && !empty($address->latitude) && !empty($address->longitude)) {
                 $product = $product
                 ->selectRaw('
-                    (
+                    SUBSTRING((
                         6371 * 1000 * acos(
                             cos(radians(?))
                             * cos(radians(stores.latitude)) 
                             * cos(radians(stores.longitude) - radians(?)) 
                             + sin(radians(?)) * sin(radians(stores.latitude))
                         )
-                    ) AS distance', 
+                    ), 1, 4) AS distance', 
                     [
                         $address->latitude,
                         $address->longitude,
