@@ -42,7 +42,23 @@ const toast = reactive({
     checkout: false,
 });
 
-const payNow = () => {};
+const badgeStatus = (status) => {
+    const obj = {
+        payment: {
+            label: "Menunggu Pembayaran",
+            color: "orange",
+        },
+        "waiting to be picked up": {
+            label: "Menunggu Pengambilan",
+            color: "indigo",
+        },
+        completed: {
+            label: "Selesai",
+            color: "teal",
+        },
+    };
+    return obj[status];
+};
 
 const donate = ref(null);
 const moneyFormat = (args) => {
@@ -63,9 +79,49 @@ onMounted(() => {});
     <BasicLayout :canLogin="canLogin" :canRegister="canRegister">
         <div class="py-12">
             <div class="max-w-7xl mx-auto px-6 lg:px-8 space-y-5">
-                <h1 class="font-bold text-lg text-uppercase">
-                    Detail Transaksi
-                </h1>
+                <div class="flex items-center space-x-2">
+                    <h1 class="font-bold text-lg text-uppercase">
+                        Detail Transaksi 
+                    </h1>
+                    <v-chip
+                        class="ma-2"
+                        :color="badgeStatus(data.order.status).color"
+                    >
+                        {{ badgeStatus(data.order.status).label }}
+                    </v-chip>
+                </div>
+
+                <div
+                    class="p-4 sm:p-8 bg-white shadow sm:rounded-lg flex flex-col space-y-5 justify-center items-center"
+                >
+                    <div
+                        class="rounded-md p-5 border flex justify-between w-full"
+                    >
+                        <p>
+                            {{ data.order.created }}
+                        </p>
+                        <p>
+                            {{ data.order.store_name }}
+                        </p>
+                        <p>
+                            Rp {{ moneyFormat(data.order.total) }}
+                        </p>
+                        <!-- <PrimaryButton
+                            v-if="data.order.status == 'waiting to be picked up'"
+                            @click="setPickedUp(data.order.id)"
+                            class="ms-4 text-center justify-center flex"
+                        >
+                            Sudah diterima
+                        </PrimaryButton>
+                        <PrimaryButton
+                            v-if="data.order.status == 'payment'"
+                            @click="setPayment(data.order.id)"
+                            class="ms-4 text-center justify-center flex"
+                        >
+                            Bayar
+                        </PrimaryButton> -->
+                    </div>
+                </div>
 
                 <h2 class="font-semibold text-md">Lokasi Penerima</h2>
                 <Address

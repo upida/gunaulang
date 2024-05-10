@@ -357,6 +357,8 @@ class MyStoreController extends Controller
 
             $payment = OrderPayment::where('order_id', '=', $order->id)->first();
 
+            $order['created'] = date('Y-m-d', strtotime($order['created_at']));
+
             return Inertia::render('Mystore/Order/Edit', [
                 'canLogin' => Route::has('login'),
                 'canRegister' => Route::has('register'),
