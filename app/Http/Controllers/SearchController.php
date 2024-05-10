@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductMedia;
 use App\Models\UserAddress;
 use Exception;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Route;
@@ -96,16 +97,23 @@ class SearchController extends Controller
 
             if ($price_end) $where[] = ['products.price', '<=', $price_end];
             
-            if ($expired_at_start) $where[] = ['products.expired_start', '>=', date('Y-m-d', strtotime($expired_at_start))];
+            if ($expired_at_start) $where[] = ['products.expired_at', '>=', date('Y-m-d', strtotime($expired_at_start))];
 
-            if ($expired_at_end) $where[] = ['products.expired_end', '<=', date('Y-m-d', strtotime($expired_at_end))];
+            if ($expired_at_end) $where[] = ['products.expired_at', '<=', date('Y-m-d', strtotime($expired_at_end))];
 
             $product = $product->where(array_merge([
                 ['products.is_active', '=', true],
                 ['products.stock', '>', 0],
             ], $where));
 
-            if ($keyword) $product = $product->whereAny(['products.title', 'products.description'], 'LIKE', "%" . $keyword . "%");
+            if ($keyword) {
+                $product = $product->where(function(Builder $query) use ($keyword) {
+                    $query->where('products.title', 'LIKE', "%" . $keyword . "%")
+                    ->orWhere('products.title', 'LIKE', $keyword . "%")
+                    ->orWhere('products.description', 'LIKE', "%" . $keyword . "%")
+                    ->orWhere('products.description', 'LIKE', $keyword . "%");
+                });
+            }
 
             if ($user && !empty($address->latitude) && !empty($address->longitude)) {
                 $product = $product->orderBy('distance');
