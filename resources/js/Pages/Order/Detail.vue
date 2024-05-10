@@ -63,12 +63,15 @@ onMounted(() => {});
     <BasicLayout :canLogin="canLogin" :canRegister="canRegister">
         <div class="py-12">
             <div class="max-w-7xl mx-auto px-6 lg:px-8 space-y-5">
-                <h1 class="font-bold text-lg text-uppercase">Detail Transaksi</h1>
+                <h1 class="font-bold text-lg text-uppercase">
+                    Detail Transaksi
+                </h1>
 
                 <h2 class="font-semibold text-md">Lokasi Penerima</h2>
                 <Address
                     :address="data.address.address"
                     :name="data.address.name"
+                    :show-icon="false"
                 />
 
                 <h2 class="font-semibold text-md">Detail Pesanan</h2>
