@@ -309,7 +309,7 @@ class OrderController extends Controller
             $order = Order::where('id', '=', (int) $id)->where('user_id', '=', $user->id)->first();
             if (!$order) throw new WebException('Order not found', 404);
             
-            $store = Store::where('store_id', '=', $order->store_id)->first();
+            $store = Store::where('id', '=', $order->store_id)->first();
             if (!$store) throw new WebException('Store not found', 404);
 
             $address = OrderAddress::where('order_id', '=', $order->id)->first();
