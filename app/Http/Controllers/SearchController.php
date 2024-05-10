@@ -89,9 +89,9 @@ class SearchController extends Controller
 
             $where = [];
 
-            if ($is_new) $where[] = ['products.is_new', '=', $is_new];
+            if ($is_new) $where[] = ['products.is_new', '=', (boolean) $is_new];
             
-            if ($is_food) $where[] = ['products.is_food', '=', $is_food];
+            if ($is_food) $where[] = ['products.is_food', '=', (boolean) $is_food];
             
             if ($price_start) $where[] = ['products.price', '>=', $price_start];
 

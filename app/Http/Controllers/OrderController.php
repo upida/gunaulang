@@ -288,11 +288,11 @@ class OrderController extends Controller
         }
     }
 
-    public function detail(Request $request, int $id) {
+    public function detail(Request $request, $id) {
         try {
             $user = $request->user();
 
-            $order = Order::where('id', '=', $id)->where('user_id', '=', $user->id)->first();
+            $order = Order::where('id', '=', (int) $id)->where('user_id', '=', $user->id)->first();
             if (!$order) throw new WebException('Order not found', 404);
             
             $store = Store::where('store_id', '=', $order->store_id)->first();
@@ -320,13 +320,13 @@ class OrderController extends Controller
         }
     }
 
-    public function detail_edit(Request $request, int $id) {
+    public function detail_edit(Request $request, $id) {
         try {
             $user = $request->user();
 
             $status = $request->get('status');
 
-            $order = Order::where('id', '=', $id)->where('user_id', '=', $user->id)->first();
+            $order = Order::where('id', '=', (int) $id)->where('user_id', '=', $user->id)->first();
             if (!$order) throw new WebException('Order not found', 404);
             
             $store = Store::where('store_id', '=', $order->store_id)->first();

@@ -44,7 +44,7 @@ class CoinController extends Controller
         }
     }
 
-    public function history_detail(Request $request, int $id) {
+    public function history_detail(Request $request, $id) {
         try {
             return Inertia::render('Coun/History/Detail', [
                 'canLogin' => Route::has('login'),

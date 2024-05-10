@@ -307,7 +307,7 @@ class MyStoreController extends Controller
         }
     }
 
-    public function order_edit_page(Request $request, int $id) {
+    public function order_edit_page(Request $request, $id) {
         try {
             $user = $request->user();
 
@@ -317,7 +317,7 @@ class MyStoreController extends Controller
             if (!$store) return Redirect::to('/mystore/create');
 
             $order = Order::where('store_id', '=', $store->id)
-            ->where('id', '=', $id)
+            ->where('id', '=', (int) $id)
             ->first();
 
             if (!$order) throw new WebException('Order not found', 404);
@@ -334,7 +334,7 @@ class MyStoreController extends Controller
         }
     }
 
-    public function order_edit(Request $request, int $id) {
+    public function order_edit(Request $request, $id) {
         try {
             $user = $request->user();
 
@@ -346,7 +346,7 @@ class MyStoreController extends Controller
             if (!$store) return Redirect::to('/mystore/create');
 
             $order = Order::where('store_id', '=', $store->id)
-            ->where('id', '=', $id)
+            ->where('id', '=', (int) $id)
             ->first();
 
             if (!$order) throw new WebException('Order not found', 404);

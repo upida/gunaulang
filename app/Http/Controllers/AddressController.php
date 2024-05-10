@@ -94,16 +94,16 @@ class AddressController extends Controller
         }
     }
     
-    public function edit(Request $request, int $id) {
+    public function edit(Request $request, $id) {
         try {
-            $address = UserAddress::where('id', $id)
+            $address = UserAddress::where('id', (int) $id)
             ->where('user_id', $request->user()->id)
             ->first();
     
             if (!$address) throw new WebException("Address not found", 404);
 
             if ($request->get('is_active')) {
-                UserAddress::where('user_id', $request->user()->id)->where('id', '<>', $id)->where('is_active', '=', 1)->update(['is_active' => 0]);
+                UserAddress::where('user_id', $request->user()->id)->where('id', '<>', (int) $id)->where('is_active', '=', 1)->update(['is_active' => 0]);
             }
 
             $address->is_active = $request->get('is_active');
