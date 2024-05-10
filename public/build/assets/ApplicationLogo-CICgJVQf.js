@@ -1,1 +1,0 @@
-import{_ as o}from"./_plugin-vue_export-helper-DlAUqK2U.js";import{o as s,f as c}from"./app-DN-RUE--.js";const t={},e={src:"/assets/logo-gunaulang.png",class:"w-14 h-14",alt:""};function n(r,a){return s(),c("img",e)}const l=o(t,[["render",n]]);export{l as A};
