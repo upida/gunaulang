@@ -90,6 +90,7 @@ onMounted(() => {});
     <Head title="Setiap Bagian Berharga" />
     <BasicLayout :canLogin="canLogin" :canRegister="canRegister">
         <div class="py-12">
+            {{ data }}
             <div class="max-w-7xl mx-auto px-6 lg:px-8 space-y-5">
                 <h1 class="font-bold text-lg text-uppercase">
                     Status Pembayaran
@@ -109,14 +110,20 @@ onMounted(() => {});
                         Anda telah berhasil melakukan pembayaran sejumlah Rp
                         {{ moneyFormat(0) }}
                     </p>
-                    <PrimaryButton
-                        @click="payNow"
-                        class="ms-4 text-center justify-center flex"
-                        :class="{ 'opacity-25': form.processing }"
-                        :disabled="selectedProduct == 0"
+                    <div
+                        v-for="i in 2"
+                        class="rounded-md p-5 border flex justify-between w-full"
                     >
-                        Lihat Detail Transaksi
-                    </PrimaryButton>
+                        <p></p>
+                        <PrimaryButton
+                            @click="detail()"
+                            class="ms-4 text-center justify-center flex"
+                            :class="{ 'opacity-25': form.processing }"
+                            :disabled="selectedProduct == 0"
+                        >
+                            Lihat Detail Transaksi
+                        </PrimaryButton>
+                    </div>
                 </div>
             </div>
         </div>
