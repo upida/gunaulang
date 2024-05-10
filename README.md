@@ -15,7 +15,7 @@ Gunaulang bisa diakses melalui website berikut:
 Video demo bisa diakses melalui gdrive berikut:
 [https://drive.google.com/file/d/1NFjbesiJYCr71_DTjzJCM70UBBDZyxQ_/view](https://drive.google.com/file/d/1NFjbesiJYCr71_DTjzJCM70UBBDZyxQ_/view)
 
-## Deployment
+## Development
 
 ### Requirement
 - php 8.2
