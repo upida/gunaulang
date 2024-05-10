@@ -15,4 +15,17 @@ Gunaulang bisa diakses melalui website berikut:
 Video demo bisa diakses melalui gdrive berikut:
 [https://drive.google.com/file/d/1NFjbesiJYCr71_DTjzJCM70UBBDZyxQ_/view](https://drive.google.com/file/d/1NFjbesiJYCr71_DTjzJCM70UBBDZyxQ_/view)
 
-## Deployment (coming soon)
+## Deployment
+
+### Requirement
+- php 8.2
+- composer 2.5
+- node 16.15
+
+1. Setting .env
+2. run `composer install`
+3. run `npm install`
+4. run `php artisan migrate`
+5. run `php artisan serve`
+6. run `npm run dev`
+7. buka `http://localhost:8000`
