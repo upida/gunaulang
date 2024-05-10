@@ -42,7 +42,23 @@ const toast = reactive({
     checkout: false,
 });
 
-const payNow = () => {};
+const badgeStatus = (status) => {
+    const obj = {
+        payment: {
+            label: "Menunggu Pembayaran",
+            color: "orange",
+        },
+        "waiting to be picked up": {
+            label: "Menunggu Pengambilan",
+            color: "indigo",
+        },
+        completed: {
+            label: "Selesai",
+            color: "teal",
+        },
+    };
+    return obj[status];
+};
 
 const donate = ref(null);
 const moneyFormat = (args) => {
@@ -63,9 +79,18 @@ onMounted(() => {});
     <BasicLayout :canLogin="canLogin" :canRegister="canRegister">
         <div class="py-12">
             <div class="max-w-7xl mx-auto px-6 lg:px-8 space-y-5">
-                <h1 class="font-bold text-lg text-uppercase">
-                    Detail Transaksi
-                </h1>
+                {{data.payment}}
+                <div class="flex items-center space-x-2">
+                    <h1 class="font-bold text-lg text-uppercase">
+                        Detail Transaksi 
+                    </h1>
+                    <v-chip
+                        class="ma-2"
+                        :color="badgeStatus(data.order.status).color"
+                    >
+                        {{ badgeStatus(data.order.status).label }}
+                    </v-chip>
+                </div>
 
                 <h2 class="font-semibold text-md">Lokasi Penerima</h2>
                 <Address
