@@ -186,6 +186,8 @@ onMounted(() => {
                         :image="product.media"
                         :distance="product.distance"
                         :store_name="product.name"
+                        :province="product.province"
+                        :price="product.price"
                     />
                 </div>
             </div>

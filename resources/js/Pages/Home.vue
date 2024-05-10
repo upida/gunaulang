@@ -76,6 +76,15 @@ const distanceFormat = (args) => {
 onMounted(() => {
     console.log(route().t.url);
 });
+const moneyFormat = (args) => {
+    if (args !== null && args !== undefined && args > 0) {
+        args = Math.round(args);
+
+        // Format the input value in Indonesian currency format
+        return args.toLocaleString("id-ID");
+    }
+    return 0;
+};
 </script>
 
 <template>
@@ -154,11 +163,16 @@ onMounted(() => {
                                 <v-card-title class="pt-4">{{
                                     product.title
                                 }}</v-card-title>
+                                <v-card-subtitle class="pt-4">
+                                    Rp
+                                    {{
+                                        moneyFormat(product.price)
+                                    }}</v-card-subtitle
+                                >
 
-                                <v-card-text class="">
-                                    <div>
-                                        {{ distanceFormat(product.distance) }}
-                                    </div>
+                                <v-card-text
+                                    class="flex justify-between w-full"
+                                >
                                     <div
                                         class="text-green-600 items-center flex cursor-pointer"
                                     >
@@ -167,6 +181,9 @@ onMounted(() => {
                                             class="mr-2"
                                         ></v-icon
                                         >{{ product.name }}
+                                    </div>
+                                    <div>
+                                        {{ distanceFormat(product.distance) }}
                                     </div>
                                 </v-card-text>
                             </v-card>
@@ -215,11 +232,15 @@ onMounted(() => {
                                 <v-card-title class="pt-4">{{
                                     product.title
                                 }}</v-card-title>
-
-                                <v-card-text class="">
-                                    <div>
-                                        {{ distanceFormat(product.distance) }}
-                                    </div>
+                                <v-card-subtitle class="pt-4">
+                                    Rp
+                                    {{
+                                        moneyFormat(product.price)
+                                    }}</v-card-subtitle
+                                >
+                                <v-card-text
+                                    class="flex justify-between w-full"
+                                >
                                     <div
                                         class="text-green-600 items-center flex cursor-pointer"
                                     >
@@ -228,6 +249,9 @@ onMounted(() => {
                                             class="mr-2"
                                         ></v-icon
                                         >{{ product.name }}
+                                    </div>
+                                    <div>
+                                        {{ distanceFormat(product.distance) }}
                                     </div>
                                 </v-card-text>
                             </v-card>
@@ -274,11 +298,16 @@ onMounted(() => {
                                 <v-card-title class="pt-4">{{
                                     product.title
                                 }}</v-card-title>
+                                <v-card-subtitle class="pt-4">
+                                    Rp
+                                    {{
+                                        moneyFormat(product.price)
+                                    }}</v-card-subtitle
+                                >
 
-                                <v-card-text class="">
-                                    <div>
-                                        {{ distanceFormat(product.distance) }}
-                                    </div>
+                                <v-card-text
+                                    class="flex justify-between w-full"
+                                >
                                     <div
                                         class="text-green-600 items-center flex cursor-pointer"
                                     >
@@ -287,6 +316,9 @@ onMounted(() => {
                                             class="mr-2"
                                         ></v-icon
                                         >{{ product.name }}
+                                    </div>
+                                    <div>
+                                        {{ distanceFormat(product.distance) }}
                                     </div>
                                 </v-card-text>
                             </v-card>
@@ -328,11 +360,16 @@ onMounted(() => {
                                 <v-card-title class="pt-4">{{
                                     product.title
                                 }}</v-card-title>
+                                <v-card-subtitle class="pt-4">
+                                    Rp
+                                    {{
+                                        moneyFormat(product.price)
+                                    }}</v-card-subtitle
+                                >
 
-                                <v-card-text class="">
-                                    <div>
-                                        {{ distanceFormat(product.distance) }}
-                                    </div>
+                                <v-card-text
+                                    class="flex justify-between w-full"
+                                >
                                     <div
                                         class="text-green-600 items-center flex cursor-pointer"
                                     >
@@ -341,6 +378,9 @@ onMounted(() => {
                                             class="mr-2"
                                         ></v-icon
                                         >{{ product.name }}
+                                    </div>
+                                    <div>
+                                        {{ distanceFormat(product.distance) }}
                                     </div>
                                 </v-card-text>
                             </v-card>

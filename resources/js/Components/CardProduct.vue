@@ -23,6 +23,12 @@ const props = defineProps({
     image: {
         type: Array,
     },
+    price: {
+        type: String,
+    },
+    province: {
+        type: String,
+    },
 });
 const distanceFormat = (args) => {
     if (args) {
@@ -32,6 +38,15 @@ const distanceFormat = (args) => {
         return `${Math.round(args / 1000)} KM`;
     }
     return `0 M`;
+};
+const moneyFormat = (args) => {
+    if (args !== null && args !== undefined && args > 0) {
+        args = Math.round(args);
+
+        // Format the input value in Indonesian currency format
+        return args.toLocaleString("id-ID");
+    }
+    return 0;
 };
 </script>
 <template>
@@ -45,13 +60,21 @@ const distanceFormat = (args) => {
         </v-img>
 
         <v-card-title class="pt-4"> {{ props.name }} </v-card-title>
-        <v-card-text>
-            <div>
-                {{ distanceFormat(props.distance) }}
-            </div>
+        <v-card-subtitle class="pt-4">
+            Rp
+            {{ moneyFormat(props.price) }}</v-card-subtitle
+        >
+        <v-card-text class="flex justify-between w-full">
             <div class="text-green-600 items-center flex cursor-pointer">
                 <v-icon icon="mdi-store-outline" class="mr-2"></v-icon
-                >{{ props.store_name }}
+                >{{ props.name }}
+            </div>
+            <div>
+                {{
+                    props.distance
+                        ? distanceFormat(props.distance)
+                        : props.province
+                }}
             </div>
         </v-card-text>
     </v-card>
