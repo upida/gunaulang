@@ -12,4 +12,7 @@ Gunaulang adalah sebuah web dimana user bisa menjual, membeli, atau mendonasikan
 Gunaulang bisa diakses melalui website berikut:
 [gunaulang.online](https://gunaulang.online)
 
+Video demo bisa diakses melalui gdrive berikut:
+[https://drive.google.com/file/d/1NFjbesiJYCr71_DTjzJCM70UBBDZyxQ_/view](https://drive.google.com/file/d/1NFjbesiJYCr71_DTjzJCM70UBBDZyxQ_/view)
+
 ## Deployment (coming soon)
