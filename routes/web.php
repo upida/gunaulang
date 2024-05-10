@@ -66,7 +66,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/order', [OrderController::class, 'order'])->name('order'); # customer.8 ✅
     Route::post('/order/add', [OrderController::class, 'add']);
-    Route::post('/order/payment', [OrderController::class, 'payment']);
+    Route::get('/order/payment', [OrderController::class, 'payment']);
     Route::get('/order', [OrderController::class, 'order_list'])->name('order.list'); # *
     Route::get('/order/{id}', [OrderController::class, 'detail'])->name('order.detail'); # customer.11
     Route::post('/order/{id}', [OrderController::class, 'detail_edit']);
