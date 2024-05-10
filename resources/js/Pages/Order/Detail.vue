@@ -78,6 +78,15 @@ const setPickedUp = (id) => {
     router.post(`/order/${id}`, payload);
 };
 
+const setPayment = (id) => {
+    const params = {
+        orders: [
+            id
+        ],
+    };
+    router.get(`/order/payment`, params);
+};
+
 onMounted(() => {});
 </script>
 
@@ -122,6 +131,13 @@ onMounted(() => {});
                             class="ms-4 text-center justify-center flex"
                         >
                             Sudah diterima
+                        </PrimaryButton>
+                        <PrimaryButton
+                            v-if="data.order.status == 'payment'"
+                            @click="setPayment(data.order.id)"
+                            class="ms-4 text-center justify-center flex"
+                        >
+                            Bayar
                         </PrimaryButton>
                     </div>
                 </div>
