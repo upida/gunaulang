@@ -269,12 +269,12 @@ class OrderController extends Controller
                 'stores.storename',
                 'stores.name',
             ])
-            ->join('stores', 'stores.id', '=', 'orders.ud')
+            ->join('stores', 'stores.id', '=', 'orders.id')
             ->whereIn('orders.id', $orders)
             ->where('orders.user_id', '=', $user->id)
             ->get()
             ->toArray();
-            
+
             foreach ($orders as $order) {
                 $payment = OrderPayment::where('order_id', '=', $order['id'])->first();
                 OrderPaymentStatus::create([
