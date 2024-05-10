@@ -163,13 +163,21 @@ const moneyFormat = (args) => {
                                 <v-card-title class="pt-4">{{
                                     product.title
                                 }}</v-card-title>
-                                <v-card-subtitle class="pt-4">
+                                <v-card-subtitle
+                                    v-if="product.price"
+                                    class="pt-4"
+                                >
                                     Rp
                                     {{
                                         moneyFormat(product.price)
                                     }}</v-card-subtitle
                                 >
-
+                                <v-card-subtitle
+                                    v-else
+                                    class="pt-4 text-green-500"
+                                >
+                                    Gratis!</v-card-subtitle
+                                >
                                 <v-card-text
                                     class="flex justify-between w-full"
                                 >
@@ -183,7 +191,13 @@ const moneyFormat = (args) => {
                                         >{{ product.name }}
                                     </div>
                                     <div>
-                                        {{ distanceFormat(product.distance) }}
+                                        {{
+                                            product.distance
+                                                ? distanceFormat(
+                                                      product.distance
+                                                  )
+                                                : product.province
+                                        }}
                                     </div>
                                 </v-card-text>
                             </v-card>
@@ -232,11 +246,20 @@ const moneyFormat = (args) => {
                                 <v-card-title class="pt-4">{{
                                     product.title
                                 }}</v-card-title>
-                                <v-card-subtitle class="pt-4">
+                                <v-card-subtitle
+                                    v-if="product.price"
+                                    class="pt-4"
+                                >
                                     Rp
                                     {{
                                         moneyFormat(product.price)
                                     }}</v-card-subtitle
+                                >
+                                <v-card-subtitle
+                                    v-else
+                                    class="pt-4 text-green-500"
+                                >
+                                    Gratis!</v-card-subtitle
                                 >
                                 <v-card-text
                                     class="flex justify-between w-full"
@@ -251,7 +274,13 @@ const moneyFormat = (args) => {
                                         >{{ product.name }}
                                     </div>
                                     <div>
-                                        {{ distanceFormat(product.distance) }}
+                                        {{
+                                            product.distance
+                                                ? distanceFormat(
+                                                      product.distance
+                                                  )
+                                                : product.province
+                                        }}
                                     </div>
                                 </v-card-text>
                             </v-card>
@@ -298,13 +327,21 @@ const moneyFormat = (args) => {
                                 <v-card-title class="pt-4">{{
                                     product.title
                                 }}</v-card-title>
-                                <v-card-subtitle class="pt-4">
+                                <v-card-subtitle
+                                    v-if="product.price"
+                                    class="pt-4"
+                                >
                                     Rp
                                     {{
                                         moneyFormat(product.price)
                                     }}</v-card-subtitle
                                 >
-
+                                <v-card-subtitle
+                                    v-else
+                                    class="pt-4 text-green-500"
+                                >
+                                    Gratis!</v-card-subtitle
+                                >
                                 <v-card-text
                                     class="flex justify-between w-full"
                                 >
@@ -318,7 +355,13 @@ const moneyFormat = (args) => {
                                         >{{ product.name }}
                                     </div>
                                     <div>
-                                        {{ distanceFormat(product.distance) }}
+                                        {{
+                                            product.distance
+                                                ? distanceFormat(
+                                                      product.distance
+                                                  )
+                                                : product.province
+                                        }}
                                     </div>
                                 </v-card-text>
                             </v-card>
@@ -360,11 +403,20 @@ const moneyFormat = (args) => {
                                 <v-card-title class="pt-4">{{
                                     product.title
                                 }}</v-card-title>
-                                <v-card-subtitle class="pt-4">
+                                <v-card-subtitle
+                                    v-if="product.price"
+                                    class="pt-4"
+                                >
                                     Rp
                                     {{
                                         moneyFormat(product.price)
                                     }}</v-card-subtitle
+                                >
+                                <v-card-subtitle
+                                    v-else
+                                    class="pt-4 text-green-500"
+                                >
+                                    Gratis!</v-card-subtitle
                                 >
 
                                 <v-card-text
@@ -380,7 +432,13 @@ const moneyFormat = (args) => {
                                         >{{ product.name }}
                                     </div>
                                     <div>
-                                        {{ distanceFormat(product.distance) }}
+                                        {{
+                                            product.distance
+                                                ? distanceFormat(
+                                                      product.distance
+                                                  )
+                                                : product.province
+                                        }}
                                     </div>
                                 </v-card-text>
                             </v-card>

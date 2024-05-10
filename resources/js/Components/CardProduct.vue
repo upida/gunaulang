@@ -60,9 +60,12 @@ const moneyFormat = (args) => {
         </v-img>
 
         <v-card-title class="pt-4"> {{ props.name }} </v-card-title>
-        <v-card-subtitle class="pt-4">
+        <v-card-subtitle v-if="props.price" class="pt-4">
             Rp
             {{ moneyFormat(props.price) }}</v-card-subtitle
+        >
+        <v-card-subtitle v-else class="pt-4 text-green-500">
+            Gratis!</v-card-subtitle
         >
         <v-card-text class="flex justify-between w-full">
             <div class="text-green-600 items-center flex cursor-pointer">
