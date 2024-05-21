@@ -29,7 +29,7 @@ const openProduct = (store, title) => {
 const categories = ref([
     {
         label: "Makan gratis disini!",
-        image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        image: route().t.url + "/assets/free%20food.jpg",
         action: () => {
             doSearch({
                 is_new: 1,
@@ -42,7 +42,7 @@ const categories = ref([
     },
     {
         label: "Makan murah",
-        image: "https://images.unsplash.com/photo-1606787366850-de6330128bfc?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        image: route().t.url + "/assets/cheap%20food.jpg",
         action: () => {
             doSearch({
                 is_new: 1,
@@ -54,14 +54,14 @@ const categories = ref([
     },
     {
         label: "Butuh limbah makanan?",
-        image: "https://images.unsplash.com/photo-1553787434-45e1d245bfbb?q=80&w=2020&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        image: route().t.url + "/assets/food%20waste.jpg",
         action: () => {
             doSearch({ is_food: 1, expired_at_end: new Date() });
         },
     },
     {
         label: "Produk olahan limbah makananmu",
-        image: "https://images.unsplash.com/photo-1587733761376-3f26fc81d17f?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        image: route().t.url + "/assets/processed%20waste.jpg",
         action: () => {
             doSearch({ is_new: 1, is_food: 0 });
         },
